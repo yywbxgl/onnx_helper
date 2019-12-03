@@ -85,6 +85,8 @@ def convert(ir_graph):
 
 
     # ------ make graph -----------
+    if ir_graph.name == "":
+        ir_graph.name = "nvdla-sun"
     graph_def = helper.make_graph(
         name = ir_graph.name,
         nodes = nodes,
