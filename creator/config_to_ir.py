@@ -39,7 +39,7 @@ def parse_weight_to_value(line):
         type_str = contents[2].strip()
         out.data_type = ir.DataType[type_str].value
         print("%s set data type %s  %d"%(out.name, type_str, out.data_type))
-        out.data = out.data.astype(np.int64)   # todo  reshape weight 参数强制改为int64
+        out.data = out.data.astype(np.int64)   # todo reshape  random init 参数强制改为int64 
     else:
         out.data_type = 1 #默认为float 类型 
 

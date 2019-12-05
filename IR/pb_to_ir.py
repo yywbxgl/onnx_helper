@@ -35,7 +35,7 @@ def protoTensor_to_irValue(proto_tensor):
         print("weight %s is raw data."%(ir_value.name))
         ir_value.data += proto_tensor.raw_data
         ir_value.raw = True
-        #todo  raw_data根据data_type转为具体的数值
+        #todo  把raw_data根据data_type转为具体的数值, 新增接口实现
         # print(ir_value.name, "get raw data")
 
     return ir_value
@@ -103,7 +103,6 @@ def convert(onnx_model_file):
         print("graph name:", ir_graph.name)
 
     # ----- 添加ir_input, ir_output -------
-    # todo 判断input形状是否为静态输入
     init_list = [i.name for i in proto_graph.initializer]
     input_list = [i.name for i in proto_graph.input]
     if len(input_list) - len(init_list) > 1:

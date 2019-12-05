@@ -33,7 +33,7 @@ class Graph:
 
 
 # 用于表示weight 以及 input, mid freature 等tensor的数据类型
-# PS: Node.attribute.data_type 不适用该枚举
+# PS: Node.attribute.data_type 不适用该枚举  todo
 class DataType(Enum):
     UNDEFINED = 0
     FLOAT = 1  

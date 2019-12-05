@@ -10,7 +10,7 @@ from IR import ir
 def irValue_to_protoValueInfo(ir_value):
     out = helper.make_tensor_value_info(
         name = ir_value.name,
-        elem_type = ir_value.data_type,  # todo int to emue type
+        elem_type = ir_value.data_type,  
         shape = ir_value.dims
     )
     return out

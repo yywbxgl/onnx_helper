@@ -79,7 +79,7 @@ def exportConfig_json(ir_graph):
                 if attr.data_type in [4, 5, 9, 10]:
                     print("can not parse attr data", attr.name, attr.data_type)
                     sys.exit(-1)
-                if attr.data_type == 3: # todo
+                elif attr.data_type == 3: # 当数据类型为String时,转为字符串，否则无法转换为json
                     data_str = bytes.decode(attr.data[0], encoding="utf-8")
                     temp["attribute"].append({"name":attr.name, "value":data_str})
                 else:
