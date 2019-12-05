@@ -6,8 +6,6 @@ import onnx
 from IR import ir
 from IR import pb_to_ir
 from IR import ir_to_pb
-# from creator import ir_config
-
 from creator import ir_to_config
 from creator import config_to_ir
 
