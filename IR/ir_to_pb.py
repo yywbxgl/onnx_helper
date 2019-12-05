@@ -39,6 +39,8 @@ def irValue_to_protoTensor(ir_value):
 
 def convert(ir_graph):
 
+    print("convert ir to pb ...")
+
     # ------ make input and output  -----------
     output_data = irValue_to_protoValueInfo(ir_graph.output)
     inputs = [irValue_to_protoValueInfo(ir_graph.input)]
@@ -47,8 +49,8 @@ def convert(ir_graph):
             temp = irValue_to_protoValueInfo(i)
             inputs.append(temp)
     
-    print("--------inputs: \n", [i.name for i in inputs])
-    print("--------outputs: \n", output_data.name)
+    print("inputs: \n", [i.name for i in inputs])
+    print("outputs: \n", output_data.name)
 
     # ------ make initializers -----------
     initializers = []
@@ -56,7 +58,7 @@ def convert(ir_graph):
         for w in node.weight:
             init = irValue_to_protoTensor(w)
             initializers.append(init)
-    print("--------initializers: \n", [i.name for i in initializers])
+    print("initializers: \n", [i.name for i in initializers])
     
 
     # ------ make node -----------
@@ -81,12 +83,12 @@ def convert(ir_graph):
             proto_node.attribute.append(temp)
         nodes.append(proto_node)
 
-    print("--------node: \n", [i.name for i in nodes])
+    print("node: \n", [i.name for i in nodes])
 
 
     # ------ make graph -----------
     if ir_graph.name == "":
-        ir_graph.name = "nvdla-sun"
+        ir_graph.name = "nbdla-test"
     graph_def = helper.make_graph(
         name = ir_graph.name,
         nodes = nodes,
@@ -96,9 +98,9 @@ def convert(ir_graph):
     )
     # print(graph_def)
 
-    print("-------------------------")
-    print(onnx.helper.printable_graph(graph_def))
-    print("-------------------------")
+    # print("-------------------------")
+    # print(onnx.helper.printable_graph(graph_def))
+    # print("-------------------------")
 
     # Create the model (ModelProto)
     onnx_model = helper.make_model(graph_def, producer_name='nbdla')
@@ -107,6 +109,8 @@ def convert(ir_graph):
     onnx.checker.check_model(onnx_model)
     print('shepe inference onnx model ...')
     onnx_model = shape_inference.infer_shapes(onnx_model)
+
+    print("convert ir to pb success.")
     # print('save onnx model ...')
     # onnx.save(onnx_model, "test.onnx")
 

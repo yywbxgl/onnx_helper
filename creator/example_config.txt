@@ -1,0 +1,100 @@
+graph : CNTKGraph
+input : Input3 ; [1, 1, 28, 28]
+output : Plus214_Output_0 ; [1, 10]
+{
+	name: Reshape_0
+	type: Reshape
+	outputs: Parameter193_reshape1
+	weight: Parameter193 ; [16, 4, 4, 10]
+	weight: Parameter193_reshape1_shape ; [2]
+}
+{
+	name: Conv_1
+	type: Conv
+	inputs: Input3
+	outputs: Convolution28_Output_0
+	weight: Parameter5 ; [8, 1, 5, 5]
+	attr: kernel_shape ; [5, 5]
+	attr: strides ; [1, 1]
+	attr: auto_pad ; [b'SAME_UPPER']
+	attr: group ; [1]
+	attr: dilations ; [1, 1]
+}
+{
+	name: Add_2
+	type: Add
+	inputs: Convolution28_Output_0
+	outputs: Plus30_Output_0
+	weight: Parameter6 ; [8, 1, 1]
+}
+{
+	name: Relu_3
+	type: Relu
+	inputs: Plus30_Output_0
+	outputs: ReLU32_Output_0
+}
+{
+	name: MaxPool_4
+	type: MaxPool
+	inputs: ReLU32_Output_0
+	outputs: Pooling66_Output_0
+	attr: kernel_shape ; [2, 2]
+	attr: strides ; [2, 2]
+	attr: pads ; [0, 0, 0, 0]
+	attr: auto_pad ; [b'NOTSET']
+}
+{
+	name: Conv_5
+	type: Conv
+	inputs: Pooling66_Output_0
+	outputs: Convolution110_Output_0
+	weight: Parameter87 ; [16, 8, 5, 5]
+	attr: kernel_shape ; [5, 5]
+	attr: strides ; [1, 1]
+	attr: auto_pad ; [b'SAME_UPPER']
+	attr: group ; [1]
+	attr: dilations ; [1, 1]
+}
+{
+	name: Add_6
+	type: Add
+	inputs: Convolution110_Output_0
+	outputs: Plus112_Output_0
+	weight: Parameter88 ; [16, 1, 1]
+}
+{
+	name: Relu_7
+	type: Relu
+	inputs: Plus112_Output_0
+	outputs: ReLU114_Output_0
+}
+{
+	name: MaxPool_8
+	type: MaxPool
+	inputs: ReLU114_Output_0
+	outputs: Pooling160_Output_0
+	attr: kernel_shape ; [3, 3]
+	attr: strides ; [3, 3]
+	attr: pads ; [0, 0, 0, 0]
+	attr: auto_pad ; [b'NOTSET']
+}
+{
+	name: Reshape_9
+	type: Reshape
+	inputs: Pooling160_Output_0
+	outputs: Pooling160_Output_0_reshape0
+	weight: Pooling160_Output_0_reshape0_shape ; [2]
+}
+{
+	name: MatMul_10
+	type: MatMul
+	inputs: Pooling160_Output_0_reshape0 ; Parameter193_reshape1
+	outputs: Times212_Output_0
+}
+{
+	name: Add_11
+	type: Add
+	inputs: Times212_Output_0
+	outputs: Plus214_Output_0
+	weight: Parameter194 ; [1, 10]
+}

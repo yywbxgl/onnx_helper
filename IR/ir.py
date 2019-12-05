@@ -1,3 +1,5 @@
+from enum import Enum
+
 class Value:
     def __init__(self):
         self.name = ""          # weight名称
@@ -28,4 +30,38 @@ class Graph:
         self.output = Value()   # graph 的输出层信息，type:value  只支持一个output
         # self.init_dict = {}          # 存放weight数据
         # self.mid_feature_dict = {}   # 存放中间层信息
+
+
+# 用于表示weight 以及 input, mid freature 等tensor的数据类型
+# PS: Node.attribute.data_type 不适用该枚举
+class DataType(Enum):
+    UNDEFINED = 0
+    FLOAT = 1  
+    UINT8 = 2
+    INT8 = 3
+    UINT16 = 4
+    INT16 = 5
+    INT32 = 6
+    INT64 = 7
+    STRING = 8
+    BOOL = 9 
+
+    # IEEE754 half-precision floating-point format (16 bits wide).
+    # This format has 1 sign bit, 5 exponent bits, and 10 mantissa bits.
+    FLOAT16 = 10
+
+    DOUBLE = 11
+    UINT32 = 12
+    UINT64 = 13
+    COMPLEX64 = 14    # complex with float32 real and imaginary components
+    COMPLEX128 = 15   # complex with float64 real and imaginary components
+
+    # Non-IEEE floating-point format based on IEEE754 single-precision
+    # floating-point number truncated to 16 bits.
+    # This format has 1 sign bit, 8 exponent bits, and 7 mantissa bits.
+    BFLOAT16 = 16
+
+
+
+   
 

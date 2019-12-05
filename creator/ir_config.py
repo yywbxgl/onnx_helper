@@ -7,10 +7,13 @@ import numpy as np
 from IR import ir
 
 def exportConfig(ir_graph):
-    print("----------------------")
+    print("------- dump ir config ---------")
+
+    split_str = " ; "
+
     config = "graph : " + ir_graph.name + "\n"
-    config += "input : " + ir_graph.input.name + " , " + str(ir_graph.input.dims) + "\n"
-    config += "output : " + ir_graph.output.name + " , " + str(ir_graph.output.dims) + "\n"
+    config += "input : " + ir_graph.input.name + split_str + str(ir_graph.input.dims) + "\n"
+    config += "output : " + ir_graph.output.name + split_str + str(ir_graph.output.dims) + "\n"
 
     for i in ir_graph.node_list:
         config += "{\n"
@@ -21,7 +24,7 @@ def exportConfig(ir_graph):
             if n == 0:
                 config += "\tinputs: " + i.input[n].name
             else:
-                config += " , " + i.input[n].name
+                config += split_str + i.input[n].name
         # 每个node不一定有input
         if (len(i.input) != 0):
             config += "\n"
@@ -30,19 +33,23 @@ def exportConfig(ir_graph):
             if n == 0:
                 config += "\toutputs: " + i.output[n].name
             else:
-                config += " , " + i.output[n].name
+                config += split_str + i.output[n].name
         # 每个node必须指定output
         config += "\n"
 
         for w in i.weight:
-            config += "\tweight: " + w.name + " , " + str(w.dims) + "\n"
+            config += "\tweight: " + w.name + split_str + str(w.dims) 
+            if w.raw == True and  w.data_type !=1 : # 当data为raw时候，保存data的数据类型，FLOAT为默认类型，不用保存
+                w_type = ir.DataType(w.data_type)
+                config += split_str +  w_type.name
+            config += "\n"
 
         for attr in i.attribute:
             # todo parse tensors and graphs
             if attr.data_type in [5, 9, 10]:
                 print("!!! can not parse attr. data type=", attr.data_type)
                 sys.exit(-1)
-            config += "\tattr: " + attr.name + " , " + str(attr.data) + "\n"
+            config += "\tattr: " + attr.name + split_str + str(attr.data) + "\n"
 
         config += "}\n"
 
@@ -110,23 +117,27 @@ def parse_to_ir_value(line):
 
 def parse_weight_to_value(line):
     out = ir.Value()
-    temp = line.split(":", 1)[1].strip() # 用 ":" 分割
-    name = temp.split(",", 1)[0].strip() # 用","分割一次，第一个值为name
-    dims = temp.split(",", 1)[1].strip()  # 用","分割一次，第二个值为dims或者npy文件
+    content = line.split(":", 1)[1].strip()  # 用 ":" 分割
+    name = content.split(",", 1)[0].strip()  # 用","分割一次，第一个值为name
+    dims = content.split(",", 1)[1].strip()  # 用","分割一次，第二个值为dims或者npy文件
+
+    print(contents)
+    print("---", name, dims)
+
     out.name = name
-    if ".npy" in dims:
-        print("init weight by numpy", dims)
-        np_data = np.load(dims)
-        out.dims = list(np_data.shape)
-        out.data_type = 1 # todo inference 输入类型写死为 float 类型
-        out.data = list(np_data.flatten())
+    out.dims = eval(dims)
+
+    if (len(contents) > 2):
+        type_str = contents[2].strip()
+        out.data_type = ir.DataType[type_str].value
+        print("%s set data type %d"%(out.name, type_str))
     else:
-        out.dims = eval(dims)
-        out.data_type = 1 # todo inference 输入类型写死为 float 类型 
-        total_size = 1
-        for i in out.dims:
-            total_size *= i
-        out.data = list(np.random.rand(total_size)) 
+        out.data_type = 1 #默认为float 类型 
+
+    total_size = 1
+    for i in out.dims:
+        total_size *= i
+    out.data = list(np.random.rand(total_size)) 
 
     return out
 
@@ -212,8 +223,7 @@ def importConfig(confg_file):
     out_graph = ir.Graph()
 
     # read config file
-    f = open("test.cfg", 'r')
-    # f = open(confg_file, 'r')
+    f = open(confg_file, 'r')
     content = f.read().split("{")
 
     # parse input and output
@@ -255,7 +265,10 @@ def importConfig(confg_file):
                     node.next_node.append(node2)
                     # print(node2.name)
     
+    # dump ir config
     exportConfig(out_graph)
+    print("config to ir success.")
+
     return out_graph
 
 
@@ -277,12 +290,12 @@ if __name__ == "__main__":
     # config = exportConfig_json(graph)
 
     # save config file
-    save_config(config, "test.cfg")
+    # save_config(config, "test.cfg")
 
     # convrt config file to ir_graph
     test_graph = importConfig("test.cfg")
 
     model2 = ir_to_pb.convert(test_graph)
-    onnx.save(model2, "test2")
+    onnx.save(model2, "test.onnx")
 
 

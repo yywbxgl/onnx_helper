@@ -32,6 +32,7 @@ def protoTensor_to_irValue(proto_tensor):
         print("can not parse external_data.")
 
     if (len(proto_tensor.raw_data) != 0):
+        print("weight %s is raw data."%(ir_value.name))
         ir_value.data += proto_tensor.raw_data
         ir_value.raw = True
         #todo  raw_data根据data_type转为具体的数值
@@ -82,6 +83,7 @@ def protoAttribute_to_irValue(proto_attribute):
 
 def convert(onnx_model_file):
 
+    print("convert pb to ir. load model ...")
     ModelProto = onnx.load(onnx_model_file)
     print("check onnx model ...")
     onnx.checker.check_model(ModelProto)
@@ -205,12 +207,12 @@ def convert(onnx_model_file):
     for index, node in  enumerate(ir_graph.node_list):
         node.name = node.op_type + "_" + str(index)
 
-    print("create IR graph success !")
+    print("convert to ir graph success !")
     return ir_graph
 
 
 def dump(ir_graph):
-    print("----------------------")
+    print("-------- ir_grapg dump --------------")
     print("graph_input  =", ir_graph.input.name,  ir_graph.input.dims)
     print("graph_output =", ir_graph.output.name,  ir_graph.output.dims)
     for i in ir_graph.node_list:
@@ -223,7 +225,7 @@ def dump(ir_graph):
             print("\tattr:", attr.name, attr.data)
         for w in i.weight:
             print("\tweight:", w.name, w.dims)
-    print("----------------------")
+    print("-----------------------------------")
 
 
 if __name__ == "__main__":
