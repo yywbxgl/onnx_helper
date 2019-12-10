@@ -11,9 +11,16 @@ from optimizer import passes
 
 
 def run_pass(graph):
-    #todo 根据命令选择不同的优化case进行运行
+    # todo 根据命令选择不同的优化case进行运行
     # graph = eliminate_node.run(graph, "Dropout")
 
+    finish_flag = False
+    while(finish_flag == False):
+        ret = True
+        ret &= passes.eliminate_dropout.run(graph)
+        ret &= passes.eliminatr_identity.run(graph)
+        ret &= passes.flatten_to_reshape.run(graph)
+        finish_flag = ret
     return graph
 
 
@@ -29,9 +36,10 @@ if __name__ == "__main__":
     graph = pb_to_ir.convert(sys.argv[1])
     pb_to_ir.dump(graph)
 
-    graph = eliminate_node.run(graph, "Dropout")
+    # optimize the grapg
+    graph = run_pass(graph)
   
-    # pb_to_ir
+    # ir_to_pb
     onnx_model = ir_to_pb.convert(graph)
     print('save onnx model ...')
     onnx.save(onnx_model, sys.argv[2]+".onnx")

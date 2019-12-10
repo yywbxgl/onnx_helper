@@ -9,11 +9,14 @@ def match_conditions(node, operator_name):
         # todo 支持并行的node删除
         if len(node.pre_node) ==1 and len(node.next_node)== 1:
             return True
+        else:
+            print("can not eliminate node.", operator_name)
     return False
 
 
 # 运行一次优化
 def run(ir_graph, operator_name):
+
     for node in ir_graph.node_list:
         if match_conditions(node, operator_name):
             # 如果不是 last_node,那么需要修改next_node.input
@@ -27,9 +30,10 @@ def run(ir_graph, operator_name):
 
             # 删除当前node
             print("eliminate_node", operator_name, node.name)
-            ir_graph.node_list.remove(node)  
-
-    return ir_graph
+            ir_graph.node_list.remove(node)
+            return False
+            
+    return True
 
 
 
