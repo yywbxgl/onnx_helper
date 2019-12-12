@@ -184,6 +184,13 @@ def convert(onnx_model_file):
     for i in ir_graph.node_list:
         print("node = ", i.name) 
    
+    updata_graph(ir_graph)
+
+    print("convert to ir graph success !")
+    return ir_graph
+
+
+def updata_graph(ir_graph):
     # ----- 遍历graph，填充pre_node 与 next_node ------
     for node in ir_graph.node_list:
         # print("node[%s] to find pre_node"%(node.name))
@@ -205,9 +212,6 @@ def convert(onnx_model_file):
     print("rename node name ...")
     for index, node in  enumerate(ir_graph.node_list):
         node.name = node.op_type + "_" + str(index)
-
-    print("convert to ir graph success !")
-    return ir_graph
 
 
 def dump(ir_graph):

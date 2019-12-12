@@ -24,9 +24,7 @@ def run(graph):
             axis = 1
             if (len(node.attribute) != 0):
                 axis = node.attribute[0].data[0]
-            print("convert flatten to reshape...")
-            print("input shape ", input_shape)
-            print("Attribute axis ", axis)
+            print("---- convert flatten to reshape.", node.output[0].name)
 
             if (axis < 0):
                 print("warn. not support nagative axis")
@@ -58,7 +56,7 @@ def run(graph):
             node.weight = []
             node.weight.append(new_weight)
 
-            print("convert flatten to reshape [%d %d]."%(out_1, out_2))
+            print("input=%s axis=%d  convert to reshape [%d %d]"%(str(input_shape), axis, out_1, out_2))
 
             return False
 

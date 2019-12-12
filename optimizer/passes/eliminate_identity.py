@@ -5,21 +5,22 @@ from IR import ir
 
 
 # 判断是否满足条件
-def match_conditions(node, operator_name):
-    if node.op_type == operator_name:
+def match_conditions(node):
+    if node.op_type == "Identity":
         # todo 支持并行的node删除
         if len(node.pre_node) ==1 and len(node.next_node)== 1:
             return True
         else:
-            print("can not eliminate node.", operator_name)
+            print("can not eliminate node.", node.op_type)
     return False
 
 
 # 运行一次优化
-def run(ir_graph, operator_name):
+def run(ir_graph):
 
     for node in ir_graph.node_list:
-        if match_conditions(node, operator_name):
+        if match_conditions(node):
+            print("---- eliminate node", node.op_type, node.output[0].name)
             # 如果不是 last_node,那么需要修改next_node.input
             if node.output[0].name != ir_graph.output.name:
                 for node2 in node.next_node:
@@ -30,11 +31,7 @@ def run(ir_graph, operator_name):
                     node2.output = node.output
 
             # 删除当前node
-            print("eliminate_node", operator_name, node.name)
             ir_graph.node_list.remove(node)
             return False
             
     return True
-
-
-

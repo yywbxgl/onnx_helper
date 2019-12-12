@@ -44,13 +44,13 @@ def convert(ir_graph):
     # ------ make input and output  -----------
     output_data = irValue_to_protoValueInfo(ir_graph.output)
     inputs = [irValue_to_protoValueInfo(ir_graph.input)]
+    print("inputs: \n", [i.name for i in inputs])
+    print("outputs: \n", output_data.name)
     for node in ir_graph.node_list:
         for i in node.weight:
             temp = irValue_to_protoValueInfo(i)
             inputs.append(temp)
     
-    print("inputs: \n", [i.name for i in inputs])
-    print("outputs: \n", output_data.name)
 
     # ------ make initializers -----------
     initializers = []
@@ -58,6 +58,11 @@ def convert(ir_graph):
         for w in node.weight:
             init = irValue_to_protoTensor(w)
             initializers.append(init)
+        for i in node.input:
+            if i.init == True:
+                temp = irValue_to_protoTensor(i)
+                initializers.append(temp)
+                print("add init input ", i.name)
     print("initializers: \n", [i.name for i in initializers])
     
 

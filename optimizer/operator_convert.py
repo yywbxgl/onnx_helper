@@ -18,8 +18,12 @@ def run_pass(graph):
     while(finish_flag == False):
         ret = True
         ret &= passes.eliminate_dropout.run(graph)
-        ret &= passes.eliminatr_identity.run(graph)
-        ret &= passes.flatten_to_reshape.run(graph)
+        ret &= passes.eliminate_identity.run(graph)
+        ret &= passes.convert_flatten_to_reshape.run(graph)
+        ret &= passes.convert_shape_to_init.run(graph)
+        ret &= passes.convert_constant_to_init.run(graph)
+        ret &= passes.eliminate_pad.run(graph)
+        # ret &= passes.fuse_pad_into_pooling.run(graph)
         finish_flag = ret
     return graph
 

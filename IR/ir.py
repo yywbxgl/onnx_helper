@@ -7,6 +7,7 @@ class Value:
         self.dims = []          # weigph形状
         self.data = []          # weight值
         self.raw = False        # data是否二进制存储，type(slef.data) = bytes
+        self.init = False       # 是否有初始值
 
 
 class Node:

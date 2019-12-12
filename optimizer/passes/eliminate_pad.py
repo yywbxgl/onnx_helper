@@ -1,25 +1,33 @@
 import sys, os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
 from IR import ir
 
 
 # 判断是否满足条件
-def match_conditions(node, operator_name):
-    if node.op_type == operator_name:
-        # todo 支持并行的node删除
-        if len(node.pre_node) ==1 and len(node.next_node)== 1:
-            return True
-        else:
-            print("can not eliminate node.", operator_name)
+def match_conditions(node):
+    if node.op_type == "Pad":
+        pads = []
+        for a in node.attribute:
+            if a.name == "pads":
+                pads = a.data
+        
+        for i in pads:
+            if (i != 0):
+                return False
+
+        # print(node.output[0].name, "has invalid pads", pads)
+        return True
+    
     return False
 
 
 # 运行一次优化
-def run(ir_graph, operator_name):
+def run(ir_graph):
 
     for node in ir_graph.node_list:
-        if match_conditions(node, operator_name):
+        if match_conditions(node):
+            print("---- eliminate node", node.op_type, node.name, node.output[0].name)
             # 如果不是 last_node,那么需要修改next_node.input
             if node.output[0].name != ir_graph.output.name:
                 for node2 in node.next_node:
@@ -30,11 +38,8 @@ def run(ir_graph, operator_name):
                     node2.output = node.output
 
             # 删除当前node
-            print("eliminate_node", operator_name, node.name)
             ir_graph.node_list.remove(node)
             return False
             
     return True
-
-
 
