@@ -47,6 +47,7 @@ def parse_weight_to_value(line):
 
 
 def parse_attr_to_value(line):
+    # print(line)
     out = ir.Value()
 
     temp = line.split(":", 1)[1].strip() # 用 ":" 分割

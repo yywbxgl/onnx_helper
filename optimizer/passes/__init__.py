@@ -7,4 +7,4 @@ import eliminate_pad
 import convert_flatten_to_reshape
 import convert_shape_to_init
 import convert_constant_to_init
-import fuse_pad_into_pooling
+import fuse_pad_into_averagePooling

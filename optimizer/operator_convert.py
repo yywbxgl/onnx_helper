@@ -23,7 +23,7 @@ def run_pass(graph):
         ret &= passes.convert_shape_to_init.run(graph)
         ret &= passes.convert_constant_to_init.run(graph)
         ret &= passes.eliminate_pad.run(graph)
-        # ret &= passes.fuse_pad_into_pooling.run(graph)
+        ret &= passes.fuse_pad_into_averagePooling.run(graph)
         finish_flag = ret
     return graph
 

@@ -33,7 +33,7 @@ def match_conditions(node):
 
         if (value == 0.0 and mode == "constant"):
             if ("Pool" in node.next_node[0].op_type) or ("Conv" in node.next_node[0].op_type):
-                print(pads)
+                # print(pads)
                 return True
     
     return False
@@ -44,13 +44,13 @@ def run(ir_graph):
 
     for node in ir_graph.node_list:
         if match_conditions(node):
-            print("---- fuse pad into next layer.", node.output[0].name)
+            print("---- fuse pad into averagePooling.", node.output[0].name)
 
             if (len(node.next_node[0].input) != 1):
                 print("error. next node has multi input.")
                 sys.exit(-1)
 
-            # 修改一层node的pads属性
+            # 修改下层node的pads属性
             pads_1 = []
             pads_2 = []
             for a in node.attribute:
@@ -70,9 +70,15 @@ def run(ir_graph):
                     pads_2[3] += pads_1[7]
 
                     a.data = pads_2
-                    print(a.data)
+                    print("averagePooling pads =", a.data)
 
-            node.next_node[0].attribute
+            # 添加count_include_pad属性. 默认为0，pad值不计入计算
+            new_attr = ir.Value()
+            new_attr.name = "count_include_pad"
+            new_attr.data_type = 2  # INT
+            new_attr.dims = [1]
+            new_attr.data = [1]
+            node.next_node[0].attribute.append(new_attr)
 
             # 删除当前node
             node.next_node[0].input = node.input

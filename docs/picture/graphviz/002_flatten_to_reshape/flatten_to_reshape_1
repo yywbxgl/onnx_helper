@@ -1,0 +1,35 @@
+digraph G {
+	rankdir=TB
+	subgraph 1 {
+		rankdir=TB
+		src_node_0 [label="src node"]
+		flatten [label=<<TABLE  BORDER="0" CELLBORDER="0" CELLSPACING="0" TITLE='index'>
+        <tr>
+            <td BGCOLOR="black" COLSPAN="2" WIDTH="120"><FONT COLOR="white"><B>flatten</B></FONT></td>
+        </tr>
+        <tr>
+            <td ALIGN="LEFT" WIDTH="60">Axis:</td>
+            <td WIDTH="60">0</td>
+        </tr>
+    </TABLE>> shape=Mrecord]
+		dst_node_0 [label="dst node"]
+		src_node_0 -> flatten [label="\ \ [n, c, h, w]"]
+		flatten -> dst_node_0 [label="\ \ [1, n&times;c&times;h&times;w]"]
+	}
+	subgraph 2 {
+		rankdir=TB
+		src_node_1 [label="src node"]
+		reshape [label=<<TABLE  BORDER="0" CELLBORDER="0" CELLSPACING="0" TITLE='index'>
+        <tr>
+            <td BGCOLOR="black" COLSPAN="2" WIDTH="100"><FONT COLOR="white"><B>reshape</B></FONT></td>
+        </tr>
+        <tr>
+            <td ALIGN="LEFT" WIDTH="50">shape:</td>
+            <td WIDTH="50">[1, n&times;c&times;h&times;w]</td>
+        </tr>
+    </TABLE>> shape=Mrecord]
+		dst_node_1 [label="dst node"]
+		src_node_1 -> reshape [label="\ \ [n, c, h, w]"]
+		reshape -> dst_node_1 [label="\ \ [1, n&times;c&times;h&times;w]"]
+	}
+}
