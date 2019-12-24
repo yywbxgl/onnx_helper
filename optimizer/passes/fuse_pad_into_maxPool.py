@@ -32,8 +32,7 @@ def match_conditions(node):
                 return False
 
         if (value == 0.0 and mode == "constant"):
-            if ("Pool" in node.next_node[0].op_type) or ("Conv" in node.next_node[0].op_type):
-                # print(pads)
+            if node.next_node[0].op_type == "MaxPool":
                 return True
     
     return False
@@ -44,7 +43,7 @@ def run(ir_graph):
 
     for node in ir_graph.node_list:
         if match_conditions(node):
-            print("---- fuse pad into averagePooling.", node.output[0].name)
+            print("---- fuse pad into maxPooling.", node.output[0].name)
 
             if (len(node.next_node[0].input) != 1):
                 print("error. next node has multi input.")
@@ -56,6 +55,10 @@ def run(ir_graph):
             for a in node.attribute:
                 if a.name == "pads":
                     pads_1 = a.data
+            if len(pads_1) == 0:
+                print("not support auto pad.", pads_1)
+                sys.exit(-1)
+
             for a in node.next_node[0].attribute:
                 if a.name == "pads":
                     pads_2 = a.data
@@ -70,15 +73,7 @@ def run(ir_graph):
                     pads_2[3] += pads_1[7]
 
                     a.data = pads_2
-                    print("averagePooling pads =", a.data)
-
-            # 添加count_include_pad属性. 默认为0，pad值不计入计算
-            new_attr = ir.Value()
-            new_attr.name = "count_include_pad"
-            new_attr.data_type = 2  # INT
-            new_attr.dims = [1]
-            new_attr.data = [1]
-            node.next_node[0].attribute.append(new_attr)
+                    print("maxPooling pads =", a.data)
 
             # 删除当前node
             node.next_node[0].input = node.input
