@@ -20,6 +20,7 @@ def run_pass(graph):
     passes.convert_shape_to_init.run(graph)
     passes.convert_flatten_to_reshape.run(graph)
     passes.convert_gather_to_init.run(graph)
+    passes.convert_unsuqeeze_to_init.run(graph)
 
     passes.fuse_pad_into_averagePool.run(graph)
     passes.fuse_pad_into_maxPool.run(graph)

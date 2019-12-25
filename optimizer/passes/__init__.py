@@ -8,6 +8,7 @@ import convert_flatten_to_reshape
 import convert_shape_to_init
 import convert_constant_to_init
 import convert_gather_to_init
+import convert_unsuqeeze_to_init
 import fuse_pad_into_averagePool
 import fuse_pad_into_maxPool
 import fuse_pad_into_conv

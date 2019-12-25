@@ -5,7 +5,6 @@ from IR import ir
 from IR import pb_to_ir
 from IR import convert_utils
 import copy
-import struct
 
 # 判断是否满足条件
 def match_conditions(node):
@@ -20,6 +19,7 @@ def run_pass(graph):
             print("---- convert constant to init.",  node.output[0].name)
             if (len(node.attribute) == 1 and node.attribute[0].name == "value"):
                 temp = pb_to_ir.protoTensor_to_irValue(node.attribute[0].data[0])
+                # 保存的int不使用raw_data
                 temp = convert_utils.convert_raw_data(temp)
 
                 # 保存 constant 到initilizer
@@ -30,16 +30,6 @@ def run_pass(graph):
                         i.data_type = temp.data_type
                         i.raw = temp.raw
                         i.init = True
-
-                        print(i.name, i.data, i.raw, i.init, i.dims)
-                        # data_temp = bytes(i.data)
-                        # # data_temp2 = int.from_bytes(data_temp, byteorder='little')
-                        # data_temp2 = struct.iter_unpack('<h', data_temp)
-                        # for i in data_temp2:
-                        #     print(i[0])
-                        # print(data_temp)
-                        # print(data_temp2)
-
 
                 # 删除constant node
                 graph.node_list.remove(node)

@@ -21,7 +21,10 @@ def protoTensor_to_irValue(proto_tensor):
     ir_value.name = proto_tensor.name
     ir_value.data_type = proto_tensor.data_type
     ir_value.dims = [n for n in proto_tensor.dims]
-
+    if len(ir_value.dims)  == 0:
+        # ir_value.dims = [0]  # 0维度，表示标量
+        print(ir_value.name, "is dims 0")
+        
     ir_value.data += proto_tensor.float_data
     ir_value.data += proto_tensor.int32_data
     ir_value.data += proto_tensor.string_data
@@ -37,7 +40,6 @@ def protoTensor_to_irValue(proto_tensor):
         ir_value.raw = True
         #todo  把raw_data根据data_type转为具体的数值, 新增接口实现
         # print(ir_value.name, "get raw data")
-
 
     return ir_value
 

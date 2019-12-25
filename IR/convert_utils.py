@@ -13,7 +13,7 @@ from IR import ir
 # input_type = IR.Value()
 def convert_raw_data(value_data):
     if value_data.raw == False or len(value_data.data) == 0:
-        logging.info("can not convert raw data")
+        # logging.info("can not convert raw data")
         return value_data
 
     format_str = ""
@@ -35,8 +35,47 @@ def convert_raw_data(value_data):
     if format_str != "":
         data_temp = struct.iter_unpack(format_str, bytes(value_data.data))
         new_data =  [i[0] for i in data_temp]
-        print(new_data)
+        # print(new_data)
         value_data.data = new_data
         value_data.raw = False
+        print("convert raw data success.")
 
     return value_data
+
+
+
+# input_type = IR.Value()
+def get_raw_data(value_data):
+
+    ret = value_data.data
+    
+    # 转换raw_data
+    if value_data.raw == True:
+        format_str = ""
+        if value_data.data_type == ir.DataType.FLOAT.value : 
+            format_str = "<f"
+        elif value_data.data_type == ir.DataType.INT8.value:
+            format_str = "<c"
+        elif value_data.data_type == ir.DataType.INT16.value:
+            format_str = "<h"
+        elif value_data.data_type == ir.DataType.INT32.value:
+            format_str = "<i"
+        elif value_data.data_type == ir.DataType.INT64.value:
+            format_str = "<q"
+        elif value_data.data_type == ir.DataType.DOUBLE.value:
+            format_str = "<d"
+        else:
+            logging.error("can not convert raw data. data_type:", value_data.data_type)
+
+        if format_str != "":
+            data_temp = struct.iter_unpack(format_str, bytes(value_data.data))
+            ret =  [i[0] for i in data_temp]
+            # print(ret)
+            print("convert raw data success.")
+    
+    # 转换标量
+    if  value_data.dims == []:
+        ret = ret[0]
+
+    return ret
+
