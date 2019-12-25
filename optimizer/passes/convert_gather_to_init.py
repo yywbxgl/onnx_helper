@@ -55,9 +55,9 @@ def run_pass(graph):
             for i in node.next_node[0].input:
                 if i.name == node.output[0].name:
                     i.dims = list(y.shape)
-                    if y is not list:
-                        y = [y]
-                    i.data = list(y)
+                    i.data = y.tolist()
+                    if type(i.data) != type([]):
+                        i.data = [i.data]
                     i.data_type = node.input[0].data_type
                     i.init = True
 

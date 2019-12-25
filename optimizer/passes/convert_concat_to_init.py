@@ -8,7 +8,7 @@ from IR import convert_utils
 
 # 判断是否满足条件
 def match_conditions(node):
-    if node.op_type == "Unsqueeze":
+    if node.op_type == "Concat":
         # 需要知道上一层的是否为静态张量
         for i in node.input:
             if i.init == False:
@@ -21,21 +21,25 @@ def match_conditions(node):
 def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
-            print("---- convert unsqueeze to initiliazer.", node.output[0].name)
-            input_data = convert_utils.get_raw_data(node.input[0])
-            print("input_data:", node.input[0].data)
+            print("---- convert concat to initiliazer.", node.output[0].name)
+
+            input_all = []
+            for i in node.input:
+                print(i.data)
+                input_data = convert_utils.get_raw_data(i)
+                print("input_data:", input_data)
+                input_all.append(np.asarray(input_data))
             
+            print("input_all:", input_all)
+
             axis_arg = 0
             for i in node.attribute:
-                if i.name == "axes":
+                if i.name == "axis":
                     axis_arg = i.data
-            print("axes=", axis_arg)
+            print("axis=", axis_arg)
 
-            y = np.array(input_data)
-            for i in axis_arg:
-                y = np.expand_dims(y, axis=i)
-
-            print("unsqueze output :", y)
+            y = np.concatenate(input_all, axis_arg[0])
+            print("concat result :", y)
 
             # 保存结果到 到initilizer
             for i in node.next_node[0].input:
