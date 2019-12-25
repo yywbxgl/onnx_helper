@@ -9,6 +9,11 @@ from IR import pb_to_ir
 from IR import ir_to_pb
 from optimizer import operator_convert
 
+# Create a logger object.
+import logging
+logger = logging.getLogger('your-module')
+
+
 if __name__ == "__main__":
 
     if len(sys.argv) != 3:
@@ -47,7 +52,7 @@ if __name__ == "__main__":
 
     print("inference compare diff: ", compare.sum())
     if compare.sum() > 1:
-        print("inference not pass!!!")
+        logging.error("inference not pass!!!")
     else:
         print("test ok")
 

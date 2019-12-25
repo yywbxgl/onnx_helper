@@ -12,21 +12,19 @@ from optimizer import passes
 
 def run_pass(graph):
     # todo 根据命令选择不同的优化case进行运行
-    # graph = eliminate_node.run(graph, "Dropout")
+    passes.eliminate_dropout.run(graph)
+    passes.eliminate_identity.run(graph)
+    passes.eliminate_pad.run(graph)
 
-    finish_flag = False
-    while(finish_flag == False):
-        ret = True
-        ret &= passes.eliminate_dropout.run(graph)
-        ret &= passes.eliminate_identity.run(graph)
-        ret &= passes.convert_flatten_to_reshape.run(graph)
-        ret &= passes.convert_shape_to_init.run(graph)
-        ret &= passes.convert_constant_to_init.run(graph)
-        ret &= passes.eliminate_pad.run(graph)
-        ret &= passes.fuse_pad_into_averagePool.run(graph)
-        ret &= passes.fuse_pad_into_maxPool.run(graph)
-        ret &= passes.fuse_pad_into_conv.run(graph)
-        finish_flag = ret
+    passes.convert_constant_to_init.run(graph)
+    passes.convert_shape_to_init.run(graph)
+    passes.convert_flatten_to_reshape.run(graph)
+    passes.convert_gather_to_init.run(graph)
+
+    passes.fuse_pad_into_averagePool.run(graph)
+    passes.fuse_pad_into_maxPool.run(graph)
+    passes.fuse_pad_into_conv.run(graph)
+
     return graph
 
 

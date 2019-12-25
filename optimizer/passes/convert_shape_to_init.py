@@ -15,7 +15,7 @@ def match_conditions(node):
     return False
 
 
-def run(graph):
+def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
             input_shape = node.input[0].dims
@@ -39,7 +39,10 @@ def run(graph):
     return True
             
             
-
+def run(graph):
+    finish_flag = False
+    while finish_flag == False :
+        finish_flag = run_pass(graph)
 
 
 

@@ -23,7 +23,7 @@ def match_conditions(node):
 
 
 # 运行一次优化
-def run(ir_graph):
+def run_pass(ir_graph):
 
     for node in ir_graph.node_list:
         if match_conditions(node):
@@ -43,3 +43,8 @@ def run(ir_graph):
             
     return True
 
+
+def run(graph):
+    finish_flag = False
+    while finish_flag == False :
+        finish_flag = run_pass(graph)

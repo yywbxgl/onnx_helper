@@ -16,8 +16,7 @@ def match_conditions(node):
 
 
 # 运行一次优化
-def run(ir_graph):
-
+def run_pass(ir_graph):
     for node in ir_graph.node_list:
         if match_conditions(node):
             print("---- eliminate node", node.op_type, node.output[0].name)
@@ -35,3 +34,9 @@ def run(ir_graph):
             return False
             
     return True
+
+
+def run(graph):
+    finish_flag = False
+    while finish_flag == False :
+        finish_flag = run_pass(graph)

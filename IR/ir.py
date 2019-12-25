@@ -64,7 +64,18 @@ class DataType(Enum):
 
 
     
+if __name__ == "__main__":
+    print(DataType.FLOAT.value)
+    print(DataType["FLOAT"].value)
+    print(DataType(1).name)
 
+    test = DataType.FLOAT
+    print(test)
+    print(test.value)
+    print(test.name)
+
+    
+    
 
 
    

@@ -38,6 +38,7 @@ def protoTensor_to_irValue(proto_tensor):
         #todo  把raw_data根据data_type转为具体的数值, 新增接口实现
         # print(ir_value.name, "get raw data")
 
+
     return ir_value
 
 
@@ -129,6 +130,7 @@ def convert(onnx_model_file):
     init_dict = {}
     for proto_init in proto_graph.initializer:
         ir_value = protoTensor_to_irValue(proto_init)
+        ir_value.init = True
         init_dict[ir_value.name] = ir_value
 
     for i in init_dict:
