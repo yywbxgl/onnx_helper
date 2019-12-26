@@ -25,12 +25,11 @@ def run_pass(graph):
 
             input_all = []
             for i in node.input:
-                print(i.data)
                 input_data = convert_utils.get_raw_data(i)
                 print("input_data:", input_data)
                 input_all.append(np.asarray(input_data))
             
-            print("input_all:", input_all)
+            # print("input_all:", input_all)
 
             axis_arg = 0
             for i in node.attribute:
@@ -64,6 +63,7 @@ def run(graph):
     finish_flag = False
     while finish_flag == False :
         finish_flag = run_pass(graph)    
+
 
 
 
