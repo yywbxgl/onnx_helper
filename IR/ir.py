@@ -32,6 +32,55 @@ class Graph:
         # self.init_dict = {}          # 存放weight数据
         # self.mid_feature_dict = {}   # 存放中间层信息
 
+    def dump(self):
+        print("-------- ir_grapg dump --------------")
+        print("graph_input  =", self.input.name,  self.input.dims)
+        print("graph_output =", self.output.name,  self.output.dims)
+        for i in self.node_list:
+            print("node = ", i.name) 
+            for inp in i.input:
+                print("\tinput:", inp.name, inp.dims)
+            for out in i.output:
+                print("\toutput:", out.name, out.dims)
+            for attr in i.attribute:
+                print("\tattr:", attr.name, attr.data)
+            for w in i.weight:
+                print("\tweight:", w.name, w.dims)
+            for p in i.pre_node:
+                print("\tpre_node:", p.name)
+            for n in i.next_node:
+                print("\tnext_node:", n.name)
+        print("-----------------------------------")
+
+    # 更新graph的名称以及pre_node和next_node
+    def updata_graph(self):
+        # ----- 初始化-------
+        for node in self.node_list:
+            node.pre_node = []
+            node.next_node = []
+
+        # ----- 遍历graph，填充pre_node 与 next_node -----
+        for node in self.node_list:
+            # print("node[%s] to find pre_node"%(node.name))
+            for i in node.input:
+                for node2 in self.node_list:
+                    if i in node2.output:
+                        node.pre_node.append(node2)
+                        # print(node2.name)
+
+            # print("node[%s] to find next_node"%(node.name))
+            for o in node.output:
+                for node2 in self.node_list:
+                    if o in node2.input:
+                        node.next_node.append(node2)
+                        # print(node2.name)
+
+        # ----- 重命名Node.name, 确保名称唯一------
+        print("---------------------")
+        print("rename node name ...")
+        for index, node in  enumerate(self.node_list):
+            node.name = node.op_type + "_" + str(index)
+
 
 # 用于表示weight 以及 input, mid freature 等tensor的数据类型
 # PS: Node.attribute.data_type 不适用该枚举  todo

@@ -22,10 +22,11 @@ if __name__ == "__main__":
 
     # pb_to_ir
     graph = pb_to_ir.convert(sys.argv[1])
-    pb_to_ir.dump(graph)
+    graph.dump()
 
     # optimize
     graph = operator_convert.run_all_pass(graph)
+    # graph.dump()
   
     # pb_to_ir
     onnx_model = ir_to_pb.convert(graph)

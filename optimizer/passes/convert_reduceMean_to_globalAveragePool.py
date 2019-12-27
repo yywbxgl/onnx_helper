@@ -2,7 +2,6 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
 from IR import ir
-from IR import pb_to_ir
 
 # 判断是否满足条件
 def match_conditions(node):
@@ -26,26 +25,6 @@ def match_conditions(node):
                     return False
 
     return False
-
-
-# 只允许单列表插入
-def add_one_node(node, type_str):
-
-    new_output = ir.Value()
-    new_output.name =  node.output[0].name + "_" + type_str
-    new_output.data_type = node.output[0].data_type
-
-    new_node = ir.Node()
-    new_node.op_type = type_str
-    new_node.pre_node = [node]
-    new_node.next_node = node.next_node
-    new_node.input = node.output[0]
-    new_node.output.append(new_output)
-
-    node.next_node[0].input = new_node.output
-    node.next_node[0].pre_node =[new_node]
-    
-    return new_node
 
 
 def run_pass(graph):  
@@ -78,7 +57,7 @@ def run_pass(graph):
                 output_shape[i] = 1
             node.output[0].dims = output_shape
                 
-            # keemdims =0 保持维度，需要进行降维度，添加reshape layer.
+            # keemdims =0 保持维度，需要进行降维度，添加reshape node进行降维.
             if keepdims == 0:
                 # 创建reshape的参数 init
                 new_weight = ir.Value()
@@ -100,14 +79,14 @@ def run_pass(graph):
                 new_node.input = node.output
                 new_node.output.append(new_output)
 
-                # 必须insert再node.next_node[0]之前
+                # 必须insert在node.next_node[0]之前
                 index = graph.node_list.index(node.next_node[0])
                 graph.node_list.insert(index, new_node)
                 node.next_node[0].input = [new_output]
                 print("add reshape node after globalAveragePool")
 
             # 更新graph
-            pb_to_ir.updata_graph(graph)
+            graph.updata_graph()
             print("convert to globalAveragePool success.")
 
             return False

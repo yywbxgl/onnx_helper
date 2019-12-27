@@ -194,55 +194,15 @@ def convert(onnx_model_file):
     return ir_graph
 
 
+# 删除接口，使用graph.updata_graph()
 def updata_graph(ir_graph):
-
-    # ----- 初始化-------
-    for node in ir_graph.node_list:
-        node.pre_node = []
-        node.next_node = []
-
-    # ----- 遍历graph，填充pre_node 与 next_node -----
-    for node in ir_graph.node_list:
-        # print("node[%s] to find pre_node"%(node.name))
-        for i in node.input:
-            for node2 in ir_graph.node_list:
-                if i in node2.output:
-                    node.pre_node.append(node2)
-                    # print(node2.name)
-
-        # print("node[%s] to find next_node"%(node.name))
-        for o in node.output:
-            for node2 in ir_graph.node_list:
-                if o in node2.input:
-                    node.next_node.append(node2)
-                    # print(node2.name)
-
-    # ----- 重命名Node.name, 确保名称唯一------
-    print("---------------------")
-    print("rename node name ...")
-    for index, node in  enumerate(ir_graph.node_list):
-        node.name = node.op_type + "_" + str(index)
+    ir_graph.updata_graph()
 
 
+# 删除接口  使用 graph.dump()
 def dump(ir_graph):
-    print("-------- ir_grapg dump --------------")
-    print("graph_input  =", ir_graph.input.name,  ir_graph.input.dims)
-    print("graph_output =", ir_graph.output.name,  ir_graph.output.dims)
-    for i in ir_graph.node_list:
-        print("node = ", i.name) 
-        for inp in i.input:
-            print("\tinput:", inp.name, inp.dims)
-        for out in i.output:
-            print("\toutput:", out.name, out.dims)
-        for attr in i.attribute:
-            print("\tattr:", attr.name, attr.data)
-        for w in i.weight:
-            print("\tweight:", w.name, w.dims)
-        for p in i.pre_node:
-            print("\tpre_node:", p.name)
-        for n in i.next_node:
-            print("\tnext_node:", n.name)
-    print("-----------------------------------")
+    ir_graph.dump()
+
 
 
 if __name__ == "__main__":
@@ -252,5 +212,5 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     graph = convert(sys.argv[1])
-    dump(graph)
+    graph.dump()
     

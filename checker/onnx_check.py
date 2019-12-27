@@ -49,7 +49,7 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     graph = pb_to_ir.convert(sys.argv[1])
-    pb_to_ir.dump(graph)
+    graph.dump()
 
     # ir_dot(graph)
     ir_dot2(graph)

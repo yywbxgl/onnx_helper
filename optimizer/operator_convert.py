@@ -5,7 +5,6 @@ import onnx
 from graphviz import Digraph
 
 from IR import pb_to_ir
-from IR import ir_to_pb
 from checker import operator_list
 from optimizer import passes
 
@@ -41,7 +40,7 @@ if __name__ == "__main__":
 
     # pb_to_ir
     graph = pb_to_ir.convert(sys.argv[1])
-    pb_to_ir.dump(graph)
+    graph.dump()
 
     # optimize the grapg
     graph = run_all_pass(graph)

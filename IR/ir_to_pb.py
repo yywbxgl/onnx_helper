@@ -41,7 +41,6 @@ def irValue_to_protoTensor(ir_value):
 def convert(ir_graph):
 
     print("convert ir to pb ...")
-    # pb_to_ir.dump(ir_graph)
 
     # ------ make input and output  -----------
     output_data = irValue_to_protoValueInfo(ir_graph.output)
