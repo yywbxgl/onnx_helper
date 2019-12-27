@@ -6,6 +6,7 @@ from onnx import AttributeProto, TensorProto, GraphProto
 import onnx
 
 from IR import ir 
+from IR import pb_to_ir
 
 def irValue_to_protoValueInfo(ir_value):
     out = helper.make_tensor_value_info(
@@ -40,6 +41,7 @@ def irValue_to_protoTensor(ir_value):
 def convert(ir_graph):
 
     print("convert ir to pb ...")
+    # pb_to_ir.dump(ir_graph)
 
     # ------ make input and output  -----------
     output_data = irValue_to_protoValueInfo(ir_graph.output)
@@ -50,8 +52,7 @@ def convert(ir_graph):
         for i in node.weight:
             temp = irValue_to_protoValueInfo(i)
             inputs.append(temp)
-    
-
+            
     # ------ make initializers -----------
     initializers = []
     for node in ir_graph.node_list:
@@ -78,6 +79,7 @@ def convert(ir_graph):
             inputs = inp,
             outputs = out,
         )
+        # print("create node. op_type=",node.op_type ,"input:", inp, "output:", out)
 
         for attr in node.attribute:
             if attr.data_type <= 5:  # fixed

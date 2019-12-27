@@ -195,7 +195,13 @@ def convert(onnx_model_file):
 
 
 def updata_graph(ir_graph):
-    # ----- 遍历graph，填充pre_node 与 next_node ------
+
+    # ----- 初始化-------
+    for node in ir_graph.node_list:
+        node.pre_node = []
+        node.next_node = []
+
+    # ----- 遍历graph，填充pre_node 与 next_node -----
     for node in ir_graph.node_list:
         # print("node[%s] to find pre_node"%(node.name))
         for i in node.input:
@@ -232,6 +238,10 @@ def dump(ir_graph):
             print("\tattr:", attr.name, attr.data)
         for w in i.weight:
             print("\tweight:", w.name, w.dims)
+        for p in i.pre_node:
+            print("\tpre_node:", p.name)
+        for n in i.next_node:
+            print("\tnext_node:", n.name)
     print("-----------------------------------")
 
 
