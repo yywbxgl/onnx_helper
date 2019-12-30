@@ -2,6 +2,8 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 from IR import ir
 from IR import convert_utils
@@ -21,7 +23,7 @@ def match_conditions(node):
 def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
-            print("---- convert gather to initiliazer.", node.output[0].name)
+            logger.info("---- convert gather to initiliazer. %s", node.output[0].name)
             
             # if node.input[0].raw == True:
             #     input_data_0 = convert_utils.convert_raw_data(node.input[0]).data
@@ -38,8 +40,8 @@ def run_pass(graph):
 
             input_data_0 = convert_utils.get_raw_data(node.input[0])
             input_data_1 = convert_utils.get_raw_data(node.input[1])
-            print("input_data:", input_data_0)
-            print("input_indeices:", input_data_1)
+            logger.info("input_data: %s", input_data_0)
+            logger.info("input_indeices: %s", input_data_1)
 
             axis_arg = 0
             for i in node.attribute:
@@ -49,7 +51,7 @@ def run_pass(graph):
             data = np.array(input_data_0)
             indices = np.array(input_data_1)
             y = np.take(data, indices, axis=axis_arg)
-            print("gather output:", y)
+            logger.info("gather output: %s", y)
 
             # 保存结果到 到initilizer
             for i in node.next_node[0].input:

@@ -2,6 +2,9 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
 from IR import ir
+import logging
+logger = logging.getLogger(__name__)
+
 
 # 判断是否满足条件
 def match_conditions(node):
@@ -9,7 +12,7 @@ def match_conditions(node):
         # 需要知道上一层的形状
         for i in node.input:
             if len(i.dims) == 0:
-                print("warn. input shape unkown.", i.dims)
+                logger.warn("input shape unkown. %s", i.dims)
                 return False
         return True
     return False
@@ -19,8 +22,8 @@ def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
             input_shape = node.input[0].dims
-            print("---- convert shape to initiliazer.", node.output[0].name)
-            print("input_shape:", input_shape)
+            logger.info("---- convert shape to initiliazer. %s", node.output[0].name)
+            logger.info("input_shape: %s", input_shape)
 
             # 保存shape 到initilizer
             for i in node.next_node[0].input:

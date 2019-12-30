@@ -1,6 +1,9 @@
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
+import logging
+logger = logging.getLogger(__name__)
+
 from IR import ir
 
 
@@ -22,7 +25,7 @@ def match_conditions(node):
                 # print("value:", value)
         
         if len(pads) != 8:
-            print("Pads attribute len not 8.")
+            logger.warn("Pads attribute len not 8.")
             return False
         
         temp_pad = [pads[0], pads[1], pads[4], pads[5]]
@@ -42,10 +45,10 @@ def match_conditions(node):
 def run_pass(ir_graph):
     for node in ir_graph.node_list:
         if match_conditions(node):
-            print("---- fuse pad into maxPooling.", node.output[0].name)
+            logger.info("---- fuse pad into maxPooling. %s", node.output[0].name)
 
             if (len(node.next_node[0].input) != 1):
-                print("error. next node has multi input.")
+                logger.error("next node has multi input.")
                 sys.exit(-1)
 
             # 修改下层node的pads属性
@@ -55,7 +58,7 @@ def run_pass(ir_graph):
                 if a.name == "pads":
                     pads_1 = a.data
             if len(pads_1) == 0:  # todo . convert auto_pad to pads
-                print("not support auto pad.", pads_1)
+                logger.error("not support auto pad. %s", pads_1)
                 sys.exit(-1)
 
             for a in node.next_node[0].attribute:
@@ -63,7 +66,7 @@ def run_pass(ir_graph):
                     pads_2 = a.data
 
                     if (len(pads_2) != 4):
-                        print("Pads attribute len not 4.")
+                        logger.error("Pads attribute len not 4.")
                         sys.exit(-1)
 
                     pads_2[0] += pads_1[2]
@@ -72,7 +75,7 @@ def run_pass(ir_graph):
                     pads_2[3] += pads_1[7]
 
                     a.data = pads_2
-                    print("maxPooling pads =", a.data)
+                    logger.info("maxPooling pads = %s", a.data)
 
             # 删除当前node
             node.next_node[0].input = node.input

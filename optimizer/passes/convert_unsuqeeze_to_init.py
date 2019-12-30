@@ -2,6 +2,8 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
 
 from IR import ir
 from IR import convert_utils
@@ -21,21 +23,21 @@ def match_conditions(node):
 def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
-            print("---- convert unsqueeze to initiliazer.", node.output[0].name)
+            logger.info("---- convert unsqueeze to initiliazer. %s", node.output[0].name)
             input_data = convert_utils.get_raw_data(node.input[0])
-            print("input_data:", node.input[0].data)
+            logger.info("input_data: %s", node.input[0].data)
             
             axis_arg = 0
             for i in node.attribute:
                 if i.name == "axes":
                     axis_arg = i.data
-            print("axes=", axis_arg)
+            logger.info("axes=%s", axis_arg)
 
             y = np.array(input_data)
             for i in axis_arg:
                 y = np.expand_dims(y, axis=i)
 
-            print("unsqueze output :", y)
+            logger.info("unsqueze output : %s", y)
 
             # 保存结果到 到initilizer
             for i in node.next_node[0].input:

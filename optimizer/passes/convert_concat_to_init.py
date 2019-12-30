@@ -5,6 +5,8 @@ import numpy as np
 
 from IR import ir
 from IR import convert_utils
+import logging
+logger = logging.getLogger(__name__)
 
 # 判断是否满足条件
 def match_conditions(node):
@@ -21,12 +23,12 @@ def match_conditions(node):
 def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
-            print("---- convert concat to initiliazer.", node.output[0].name)
+            logger.info("---- convert concat to initiliazer. %s", node.output[0].name)
 
             input_all = []
             for i in node.input:
                 input_data = convert_utils.get_raw_data(i)
-                print("input_data:", input_data)
+                logger.info("input_data: %s", input_data)
                 input_all.append(np.asarray(input_data))
             
             # print("input_all:", input_all)
@@ -35,10 +37,10 @@ def run_pass(graph):
             for i in node.attribute:
                 if i.name == "axis":
                     axis_arg = i.data
-            print("axis=", axis_arg)
+            logger.info("axis= %d", axis_arg)
 
             y = np.concatenate(input_all, axis_arg[0])
-            print("concat result :", y)
+            logger.info("concat result : %s ", y)
 
             # 保存结果到 到initilizer
             for i in node.next_node[0].input:

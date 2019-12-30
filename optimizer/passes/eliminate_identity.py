@@ -1,6 +1,9 @@
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+import logging
+logger = logging.getLogger(__name__)
+
 from IR import ir
 
 
@@ -11,7 +14,7 @@ def match_conditions(node):
         if len(node.pre_node) ==1 and len(node.next_node)== 1:
             return True
         else:
-            print("can not eliminate node.", node.op_type)
+            logger.warn("can not eliminate node. %s", node.op_type)
     return False
 
 
@@ -19,7 +22,7 @@ def match_conditions(node):
 def run_pass(ir_graph):
     for node in ir_graph.node_list:
         if match_conditions(node):
-            print("---- eliminate node", node.op_type, node.output[0].name)
+            logger.info("---- eliminate node %s %s", node.op_type, node.output[0].name)
             # 如果不是 last_node,那么需要修改next_node.input
             if node.output[0].name != ir_graph.output.name:
                 for node2 in node.next_node:

@@ -2,11 +2,9 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import onnx
-import logging
 import struct # https://docs.python.org/3/library/struct.html
-
-
-logging.basicConfig(level=logging.DEBUG)
+import logging
+logger = logging.getLogger(__name__)
 
 from IR import ir
 
@@ -30,7 +28,7 @@ def convert_raw_data(value_data):
     elif value_data.data_type == ir.DataType.DOUBLE.value:
         format_str = "<d"
     else:
-        logging.error("can not convert raw data. data_type:", value_data.data_type)
+        logger.error("can not convert raw data. data_type: %s", value_data.data_type)
 
     if format_str != "":
         data_temp = struct.iter_unpack(format_str, bytes(value_data.data))
@@ -38,7 +36,7 @@ def convert_raw_data(value_data):
         # print(new_data)
         value_data.data = new_data
         value_data.raw = False
-        print("convert raw data success.")
+        logger.debug("convert raw data success.")
 
     return value_data
 
@@ -65,13 +63,13 @@ def get_raw_data(value_data):
         elif value_data.data_type == ir.DataType.DOUBLE.value:
             format_str = "<d"
         else:
-            logging.error("can not convert raw data. data_type:", value_data.data_type)
+            logger.error("can not convert raw data. data_type: %s", value_data.data_type)
 
         if format_str != "":
             data_temp = struct.iter_unpack(format_str, bytes(value_data.data))
             ret =  [i[0] for i in data_temp]
             # print(ret)
-            print("convert raw data success.")
+            logger.debug("convert raw data success.")
     
     # 转换标量
     if  value_data.dims == []:

@@ -2,6 +2,8 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '...'))
 
 from IR import ir
+import logging
+logger = logging.getLogger(__name__)
 
 # 判断是否满足条件
 def match_conditions(node):
@@ -21,7 +23,7 @@ def match_conditions(node):
                 if axes == temp:
                     return True
                 else:
-                    print("can not convert axes=", axes)
+                    logger.error("can not convert axes= %d", axes)
                     return False
 
     return False
@@ -30,7 +32,7 @@ def match_conditions(node):
 def run_pass(graph):  
     for node in graph.node_list:
         if match_conditions(node) == True:
-            print("---- convert reduceMean to globalAveragePool.", node.output[0].name)
+            logger.info("---- convert reduceMean to globalAveragePool. %s", node.output[0].name)
             
             # 获取input shape 以及 axis属性
             input_shape = node.input[0].dims
@@ -42,9 +44,9 @@ def run_pass(graph):
                 if attr.name == "keepdims":
                     keepdims = attr.data[0]
 
-            print("input_shape:", input_shape)
-            print("axes:", axes)
-            print("keepdims:", keepdims)
+            logger.info("input_shape: %s", input_shape)
+            logger.info("axes: %s", axes)
+            logger.info("keepdims: %s", keepdims)
 
             # 替换为GlobalAveragePool
             node.name = ""
@@ -83,11 +85,11 @@ def run_pass(graph):
                 index = graph.node_list.index(node.next_node[0])
                 graph.node_list.insert(index, new_node)
                 node.next_node[0].input = [new_output]
-                print("add reshape node after globalAveragePool")
+                logger.info("add reshape node after globalAveragePool")
 
             # 更新graph
             graph.updata_graph()
-            print("convert to globalAveragePool success.")
+            logger.info("convert to globalAveragePool success.")
 
             return False
 

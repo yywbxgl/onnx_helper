@@ -1,4 +1,6 @@
 from enum import Enum
+import logging
+logger = logging.getLogger(__name__)
 
 class Value:
     def __init__(self):
@@ -33,27 +35,39 @@ class Graph:
         # self.mid_feature_dict = {}   # 存放中间层信息
 
     def dump(self):
-        print("-------- ir_grapg dump --------------")
-        print("graph_input  =", self.input.name,  self.input.dims)
-        print("graph_output =", self.output.name,  self.output.dims)
+        logger.debug("-------- ir_grapg dump --------------")
+        logger.debug("graph_input  = %s %s", self.input.name,  self.input.dims)
+        logger.debug("graph_output = %s %s", self.output.name,  self.output.dims)
+
+        node_str = "\n"
         for i in self.node_list:
-            print("node = ", i.name) 
+            node_str += "node = %s\n"%(i.name)
+            # logger.debug("node = %s", i.name) 
             for inp in i.input:
-                print("\tinput:", inp.name, inp.dims)
+                # logger.debug("\tinput: %s %s", inp.name, inp.dims)
+                node_str += "\tinput: %s %s\n"%(inp.name, inp.dims)
             for out in i.output:
-                print("\toutput:", out.name, out.dims)
+                # logger.debug("\toutput: %s %s", out.name, out.dims)
+                node_str += "\toutput: %s %s\n"%(out.name, out.dims)
             for attr in i.attribute:
-                print("\tattr:", attr.name, attr.data)
+                # logger.debug("\tattr: %s %s", attr.name, attr.data)
+                node_str += "\tattr: %s %s\n"%(attr.name, attr.data)
             for w in i.weight:
-                print("\tweight:", w.name, w.dims)
+                # logger.debug("\tweight: %s %s", w.name, w.dims)
+                node_str += "\tweight: %s %s\n"%(w.name, w.dims)
             for p in i.pre_node:
-                print("\tpre_node:", p.name)
+                # logger.debug("\tpre_node: %s", p.name)
+                node_str += "\tpre_node: %s\n"%(p.name)
             for n in i.next_node:
-                print("\tnext_node:", n.name)
-        print("-----------------------------------")
+                # logger.debug("\tnext_node: %s", n.name)
+                node_str += "\tnext_node: %s\n"%(n.name)
+        logger.debug("%s", node_str)  
+        logger.debug("-----------------------------------")
+
 
     # 更新graph的名称以及pre_node和next_node
     def updata_graph(self):
+        logger.info("updata graph.")
         # ----- 初始化-------
         for node in self.node_list:
             node.pre_node = []
@@ -76,8 +90,6 @@ class Graph:
                         # print(node2.name)
 
         # ----- 重命名Node.name, 确保名称唯一------
-        print("---------------------")
-        print("rename node name ...")
         for index, node in  enumerate(self.node_list):
             node.name = node.op_type + "_" + str(index)
 

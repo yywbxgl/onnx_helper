@@ -5,6 +5,8 @@ from IR import ir
 from IR import pb_to_ir
 from IR import convert_utils
 import copy
+import logging
+logger = logging.getLogger(__name__)
 
 # 判断是否满足条件
 def match_conditions(node):
@@ -16,7 +18,7 @@ def match_conditions(node):
 def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
-            print("---- convert constant to init.",  node.output[0].name)
+            logger.info("---- convert constant to init. %s",  node.output[0].name)
             if (len(node.attribute) == 1 and node.attribute[0].name == "value"):
                 temp = pb_to_ir.protoTensor_to_irValue(node.attribute[0].data[0])
                 # 保存的int不使用raw_data
@@ -36,7 +38,7 @@ def run_pass(graph):
                 return False
 
             else:
-                print("error. can not support sparse_value")
+                logger.error("error. can not support sparse_value")
                 sys.exit(-1)
                 return True
     return True

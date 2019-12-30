@@ -3,6 +3,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import onnx
 from graphviz import Digraph
+import logging
+logger = logging.getLogger(__name__)
 
 from IR import pb_to_ir
 from checker import operator_list
@@ -10,6 +12,7 @@ from optimizer import passes
 
 
 def run_all_pass(graph):
+    logger.info("run all passes...")
     # todo 根据命令选择不同的优化case进行运行
     passes.eliminate_dropout.run(graph)
     passes.eliminate_identity.run(graph)

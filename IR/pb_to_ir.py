@@ -3,6 +3,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import onnx
 from onnx import shape_inference
+import logging
+logger = logging.getLogger(__name__)
 
 from IR import ir
 
@@ -23,7 +25,7 @@ def protoTensor_to_irValue(proto_tensor):
     ir_value.dims = [n for n in proto_tensor.dims]
     if len(ir_value.dims)  == 0:
         # ir_value.dims = [0]  # 0维度，表示标量
-        print(ir_value.name, "is dims 0")
+        logger.debug("%s is dims 0", ir_value.name)
         
     ir_value.data += proto_tensor.float_data
     ir_value.data += proto_tensor.int32_data
@@ -32,14 +34,12 @@ def protoTensor_to_irValue(proto_tensor):
     ir_value.data += proto_tensor.double_data
     ir_value.data += proto_tensor.uint64_data
     if (len(proto_tensor.external_data) != 0):
-        print("can not parse external_data.")
+        logger.warn("can not parse external_data.")
 
     if (len(proto_tensor.raw_data) != 0):
-        print("weight %s is raw data."%(ir_value.name))
+        logger.debug("weight %s is raw data."%(ir_value.name))
         ir_value.data += proto_tensor.raw_data
         ir_value.raw = True
-        #todo  把raw_data根据data_type转为具体的数值, 新增接口实现
-        # print(ir_value.name, "get raw data")
 
     return ir_value
 
@@ -86,49 +86,50 @@ def protoAttribute_to_irValue(proto_attribute):
 
 def convert(onnx_model_file):
 
-    print("convert pb to ir. load model ...")
+    logger.info("load model ...")
     ModelProto = onnx.load(onnx_model_file)
-    print("check onnx model ...")
+    logger.info("check onnx model ...")
     onnx.checker.check_model(ModelProto)
-    print("shape inference onnx model ...")
+    logger.info("shape inference onnx model ...")
     ModelProto = shape_inference.infer_shapes(ModelProto)
 
+    logger.info("convert onnx model to IR ...")
     # ----- 解析 model_proto层-----------
-    print("---- model info ----")
-    print("ir_version:", ModelProto.ir_version)
-    print("opsert_import:", ModelProto.opset_import[0].domain, ModelProto.opset_import[0].version)
-    print("producer_name:", ModelProto.producer_name)
+    logger.debug("---- model info ----")
+    logger.debug("ir_version: %s", ModelProto.ir_version)
+    logger.debug("opsert_import: %s %s", ModelProto.opset_import[0].domain, ModelProto.opset_import[0].version)
+    logger.debug("producer_name: %s", ModelProto.producer_name)
 
     proto_graph = ModelProto.graph
     ir_graph = ir.Graph()
     if (proto_graph.name != ""):
         ir_graph.name = proto_graph.name 
-        print("graph name:", ir_graph.name)
+        logger.debug("graph name: %s", ir_graph.name)
 
     # ----- 添加ir_input, ir_output -------
     init_list = [i.name for i in proto_graph.initializer]
     input_list = [i.name for i in proto_graph.input]
     if len(input_list) - len(init_list) > 1:
-        print("!!! can not parse multi input.")
+        logger.error("!!! can not parse multi input.")
         sys.exit(-1)
     for i in proto_graph.input:
         if i.name not in init_list:
             ir_graph.input = protoValueInfo_to_irValue(i)    
-    print("input: ", ir_graph.input.name , str(ir_graph.input.dims))
+    logger.debug("input: %s %s", ir_graph.input.name , str(ir_graph.input.dims))
 
     for dim in ir_graph.input.dims:
         if dim == 0:
-            print("!!! can not parse dynamic input.")
+            logger.error("!!! can not parse dynamic input.")
             sys.exit(-1)
 
     if len(proto_graph.output) > 1:
-        print("!!! can not parse multi output.")
+        logger.error("!!! can not parse multi output.")
         sys.exit(-1)
     ir_graph.output = protoValueInfo_to_irValue(proto_graph.output[0])
-    print("output:", ir_graph.output.name,  ir_graph.output.dims)
+    logger.debug("output: %s %s", ir_graph.output.name,  ir_graph.output.dims)
 
     # ----- 添加 init_list -----
-    print("----------------------")
+    logger.debug("----------------------")
     init_dict = {}
     for proto_init in proto_graph.initializer:
         ir_value = protoTensor_to_irValue(proto_init)
@@ -136,11 +137,11 @@ def convert(onnx_model_file):
         init_dict[ir_value.name] = ir_value
 
     for i in init_dict:
-        print("init-weight: ", init_dict[i].name, init_dict[i].dims)
+        logger.debug("init-weight: %s %s", init_dict[i].name, init_dict[i].dims)
         
 
     # ---- 添加mid feature list -----
-    print("----------------------")
+    logger.debug("----------------------")
     mid_feature_dict = {}
     for proto_node in proto_graph.node:
         for output in proto_node.output:
@@ -154,10 +155,10 @@ def convert(onnx_model_file):
             mid_feature_dict[value_info.name].dims.append(i.dim_value)
 
     for i in mid_feature_dict:
-        print("mid-feature: ", mid_feature_dict[i].name, mid_feature_dict[i].dims)
+        logger.debug("mid-feature: %s %s", mid_feature_dict[i].name, mid_feature_dict[i].dims)
 
     # ----- 添加ir_node ------
-    print("----------------------")
+    logger.debug("----------------------")
     for proto_node in proto_graph.node:
         ir_node = ir.Node()
         ir_node.name = proto_node.name
@@ -172,7 +173,7 @@ def convert(onnx_model_file):
             elif i == ir_graph.input.name:
                 ir_node.input.append(ir_graph.input)
             else:
-                print("input [%s] not find"%(i))
+                logger.warn("input %s not find", i)
             
         for i in proto_node.output:
             if i in mid_feature_dict:
@@ -180,17 +181,16 @@ def convert(onnx_model_file):
             elif i == ir_graph.output.name:
                 ir_node.output.append(ir_graph.output)
             else:
-                print("!!! output [%s] not find"%(i))
+                 logger.warn("output %s not find", i)
 
         ir_graph.node_list.append(ir_node)
 
-
     for i in ir_graph.node_list:
-        print("node = ", i.name) 
+        logger.debug("node = %s", i.name) 
    
     updata_graph(ir_graph)
-
-    print("convert to ir graph success !")
+    ir_graph.dump()
+    logger.info("convert to ir graph success !")
     return ir_graph
 
 

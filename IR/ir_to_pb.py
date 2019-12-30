@@ -4,6 +4,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from onnx import helper, shape_inference
 from onnx import AttributeProto, TensorProto, GraphProto
 import onnx
+import logging
+logger = logging.getLogger(__name__)
 
 from IR import ir 
 from IR import pb_to_ir
@@ -40,13 +42,13 @@ def irValue_to_protoTensor(ir_value):
 
 def convert(ir_graph):
 
-    print("convert ir to pb ...")
+    logger.info("convert ir to pb ...")
 
     # ------ make input and output  -----------
     output_data = irValue_to_protoValueInfo(ir_graph.output)
     inputs = [irValue_to_protoValueInfo(ir_graph.input)]
-    print("inputs: \n", [i.name for i in inputs])
-    print("outputs: \n", output_data.name)
+    logger.debug("inputs: %s\n", [i.name for i in inputs])
+    logger.debug("outputs: %s\n", output_data.name)
     for node in ir_graph.node_list:
         for i in node.weight:
             temp = irValue_to_protoValueInfo(i)
@@ -62,8 +64,8 @@ def convert(ir_graph):
             if i.init == True:
                 temp = irValue_to_protoTensor(i)
                 initializers.append(temp)
-                print("add init input ", i.name)
-    print("initializers: \n", [i.name for i in initializers])
+                logger.debug("add init input %s", i.name)
+    logger.debug("initializers: %s\n", [i.name for i in initializers])
     
 
     # ------ make node -----------
@@ -89,7 +91,7 @@ def convert(ir_graph):
             proto_node.attribute.append(temp)
         nodes.append(proto_node)
 
-    print("node: \n", [i.name for i in nodes])
+    logger.debug("node: %s\n", [i.name for i in nodes])
 
 
     # ------ make graph -----------
@@ -111,13 +113,13 @@ def convert(ir_graph):
     # Create the model (ModelProto)
     onnx_model = helper.make_model(graph_def, producer_name='nbdla')
 
-    print('check onnx model ...')
+    logger.info('check onnx model ...')
     onnx.checker.check_model(onnx_model)
-    print('shepe inference onnx model ...')
+    logger.info('shepe inference onnx model ...')
     onnx_model = shape_inference.infer_shapes(onnx_model)
 
-    print("convert ir to pb success.")
-    # print('save onnx model ...')
+    logger.info("convert ir to pb success.")
+    # logger.info('save onnx model ...')
     # onnx.save(onnx_model, "test.onnx")
 
     return onnx_model
