@@ -140,7 +140,7 @@ pads值全为0  或者
 ---
 
 
-### 6. Pad fuse into Pooling 
+### 6. Pad fuse into MaxPool 
 ![Pad fuse](./picture/graphviz/006_pad_remove/2.png)  
 ##### 类型：
 指令融合
@@ -153,8 +153,23 @@ mode="constant" , constant_value=0, pads值不小于0
 ---
 
 
+### 7. Pad fuse into AveragePool 
+![Pad fuse](./picture/graphviz/006_pad_remove/2.png)  
+##### 类型：
+指令融合
+##### 原理：
+[Operator Define](https://github.com/onnx/onnx/blob/master/docs/Operators.md#Pad)
+对于 pad + pooling 这样的操作，由于pooling操作有有pads参数可是设置，所以可以将一些pad层与pooling层融合
+##### Attributes 限制：
+mode="constant" , constant_value=0, pads值不小于0
+##### PS: 
+averagePool的count_include_pad需要设置为1，表示计算边缘时将包含pad值。
 
-### 6. Pad fuse into Conv 
+---
+
+
+
+### 8. Pad fuse into Conv 
 ![Pad fuse](./picture/graphviz/006_pad_remove/2.png)  
 ##### 类型：
 指令融合

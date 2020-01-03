@@ -47,8 +47,8 @@ def convert(ir_graph):
     # ------ make input and output  -----------
     output_data = irValue_to_protoValueInfo(ir_graph.output)
     inputs = [irValue_to_protoValueInfo(ir_graph.input)]
-    logger.debug("inputs: %s\n", [i.name for i in inputs])
-    logger.debug("outputs: %s\n", output_data.name)
+    logger.debug("inputs: %s", [i.name for i in inputs])
+    logger.debug("outputs: %s", output_data.name)
     for node in ir_graph.node_list:
         for i in node.weight:
             temp = irValue_to_protoValueInfo(i)
@@ -64,8 +64,8 @@ def convert(ir_graph):
             if i.init == True:
                 temp = irValue_to_protoTensor(i)
                 initializers.append(temp)
-                logger.debug("add init input %s", i.name)
-    logger.debug("initializers: %s\n", [i.name for i in initializers])
+                logger.info("add init input %s", i.name)
+    logger.debug("initializers: %s", [i.name for i in initializers])
     
 
     # ------ make node -----------
@@ -91,7 +91,7 @@ def convert(ir_graph):
             proto_node.attribute.append(temp)
         nodes.append(proto_node)
 
-    logger.debug("node: %s\n", [i.name for i in nodes])
+    logger.debug("node: %s", [i.name for i in nodes])
 
 
     # ------ make graph -----------

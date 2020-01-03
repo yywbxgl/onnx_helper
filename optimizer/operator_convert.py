@@ -33,6 +33,14 @@ def run_all_pass(graph):
     return graph
 
 
+def check_convert(grapg):
+    ret = False
+
+    pass
+
+
+
+
 if __name__ == "__main__":
 
     if len(sys.argv) != 3:

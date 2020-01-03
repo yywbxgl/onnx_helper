@@ -20,6 +20,15 @@ def match_conditions(node):
     return False
 
 
+def check_convert(graph):
+    for node in graph.node_list:
+        if match_conditions(node) == True:
+            return True
+
+    return False
+
+
+
 def run_pass(graph):
     for node in graph.node_list:
         if match_conditions(node) == True:
@@ -37,7 +46,7 @@ def run_pass(graph):
             for i in node.attribute:
                 if i.name == "axis":
                     axis_arg = i.data
-            logger.info("axis= %d", axis_arg)
+            logger.info("axis= %s", axis_arg)
 
             y = np.concatenate(input_all, axis_arg[0])
             logger.info("concat result : %s ", y)

@@ -8,8 +8,8 @@ import logging
 import coloredlogs
 fmt = "[%(levelname)-5s] [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s"
 fmt = "[%(levelname)-5s] [%(filename)s:%(lineno)d] %(message)s"
-# coloredlogs.install(level="INFO", fmt=fmt)
-coloredlogs.install(level="DEBUG", fmt=fmt)
+coloredlogs.install(level="INFO", fmt=fmt)
+# coloredlogs.install(level="DEBUG", fmt=fmt)
 logger = logging.getLogger(__name__)
 
 from IR import pb_to_ir
