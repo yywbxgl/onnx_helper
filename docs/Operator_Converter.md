@@ -26,7 +26,7 @@
 4. ONNX model中的所有属性均合法
 
 ### 1. Dropout remove
-![dropout remove](./picture/graphviz/001_dropout_remove/dropout_remove.png)  
+![dropout remove](/docs/picture/graphviz/001_dropout_remove/dropout_remove.png)  
 ##### 类型：
 假指令移除
 ##### 原理：
@@ -47,7 +47,7 @@ Dropout在inference中无作用，所以可以被移除
 ---
 
 ### 2. Flatten -> Reshape
-![flatten -> reshape](./picture/graphviz/002_flatten_to_reshape/flatten_to_reshape_0.png)
+![flatten -> reshape](/docs/picture/graphviz/002_flatten_to_reshape/flatten_to_reshape_0.png)
 ##### 类型：
 等效指令替换
 ##### 原理：
@@ -73,7 +73,7 @@ Flatten和Reshape一般都是用在fc layer之前用于将tensor转换成vector:
 Flatten->Axis = 0  
 Reshape->Shape = [1, n\*c\*h\*w]  
 ```
-![flatten -> reshape](./picture/graphviz/002_flatten_to_reshape/flatten_to_reshape_1.png)
+![flatten -> reshape](/docs/picture/graphviz/002_flatten_to_reshape/flatten_to_reshape_1.png)
 ##### 受影响的框架：
 |  框架   | 影响  |
 |  ----  | :----:  |
@@ -87,7 +87,7 @@ Reshape->Shape = [1, n\*c\*h\*w]
 ---
 
 ### 3. Constant  remove
-![Constant remove](./picture/graphviz/003_constant_remove/1.png)  
+![Constant remove](/docs/picture/graphviz/003_constant_remove/1.png)  
 ##### 类型：
 假指令移除
 ##### 原理：
@@ -100,7 +100,7 @@ Reshape->Shape = [1, n\*c\*h\*w]
 ---
 
 ### 4. Identity  remove
-![Constant remove](./picture/graphviz/004_identity_remove/1.png)  
+![Constant remove](/docs/picture/graphviz/004_identity_remove/1.png)  
 ##### 类型：
 假指令移除
 ##### 原理：
@@ -112,7 +112,7 @@ Reshape->Shape = [1, n\*c\*h\*w]
 ---
 
 ### 5. Shape  remove
-![Shape remove](./picture/graphviz/005_shape_remove/1.png)  
+![Shape remove](/docs/picture/graphviz/005_shape_remove/1.png)  
 ##### 类型：
 假指令移除
 ##### 原理：
@@ -125,7 +125,7 @@ Reshape->Shape = [1, n\*c\*h\*w]
 
 
 ### 6. Pad remove
-![Pad remove](./picture/graphviz/006_pad_remove/1.png)  
+![Pad remove](/docs/picture/graphviz/006_pad_remove/1.png)  
 ##### 类型：
 假指令移除
 
@@ -141,7 +141,7 @@ pads值全为0  或者
 
 
 ### 6. Pad fuse into MaxPool 
-![Pad fuse](./picture/graphviz/006_pad_remove/2.png)  
+![Pad fuse](/docs/picture/graphviz/006_pad_remove/2.png)  
 ##### 类型：
 指令融合
 ##### 原理：
@@ -154,7 +154,7 @@ mode="constant" , constant_value=0, pads值不小于0
 
 
 ### 7. Pad fuse into AveragePool 
-![Pad fuse](./picture/graphviz/006_pad_remove/2.png)  
+![Pad fuse](/docs/picture/graphviz/006_pad_remove/2.png)  
 ##### 类型：
 指令融合
 ##### 原理：
@@ -170,7 +170,7 @@ averagePool的count_include_pad需要设置为1，表示计算边缘时将包含
 
 
 ### 8. Pad fuse into Conv 
-![Pad fuse](./picture/graphviz/006_pad_remove/2.png)  
+![Pad fuse](/docs/picture/graphviz/006_pad_remove/2.png)  
 ##### 类型：
 指令融合
 ##### 原理：

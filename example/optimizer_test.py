@@ -36,7 +36,7 @@ if __name__ == "__main__":
     onnx.save(onnx_model, sys.argv[2]+".onnx")
 
     # check model, inference compare
-    logger.info("inference compare...")
+    logger.info("inference test...")
     input_shape = graph.input.dims
     input_data = np.random.randint(0,255, size=input_shape).astype(np.float32)
     logger.debug("input_shape:%s", str(input_shape))
@@ -44,20 +44,16 @@ if __name__ == "__main__":
     model_1 = onnx.load(sys.argv[1])
     session_1 = backend.prepare(model_1,  strict=False)
     output_1 = session_1.run(input_data)
-    output_1 = np.array(output_1)
     logger.info("input model test finish")
 
     model_2 = onnx.load(sys.argv[2]+".onnx")
     session_2 = backend.prepare(model_2,  strict=False)
     output_2 = session_2.run(input_data)
-    output_2 = np.array(output_2)
     logger.info("output model test finish")
 
-    compare = output_1 - output_2
+    # compare result
+    np.testing.assert_almost_equal(output_1, output_2)
+    logger.info("test ok")
 
-    logger.info("inference result compare diff: %f", compare.sum())
-    if compare.sum() > 1:
-        logging.error("inference not pass!!!")
-    else:
-        logger.info("test ok")
+
 

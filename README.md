@@ -1,9 +1,20 @@
+## Introduction
+- ##### onnx model optimize optimizer
+  - Modify onnx operator, 
+  - optimize the graph.
+  - See details in [YKX ONNX Operator Converter.](/docs/Operator_Converter.md)
+
+- ##### onnx model editor
+   - export onnx model config and weight, 
+   - modity the model by config, 
+
+
 ## Environment
 pip3 install onnx  
 pip3 install graphviz
 
 
-## Usage
+## Example
 
 ```
 cd example
