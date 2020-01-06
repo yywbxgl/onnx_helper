@@ -73,7 +73,7 @@ Flatten和Reshape一般都是用在fc layer之前用于将tensor转换成vector:
 Flatten->Axis = 0  
 Reshape->Shape = [1, n\*c\*h\*w]  
 ```
-![flatten -> reshape](/docs/picture/graphviz/002_flatten_to_reshape/flatten_to_reshape_1.png)
+![flatten -> reshape](./picture/graphviz/002_flatten_to_reshape/flatten_to_reshape_1.png)
 ##### 受影响的框架：
 |  框架   | 影响  |
 |  ----  | :----:  |
