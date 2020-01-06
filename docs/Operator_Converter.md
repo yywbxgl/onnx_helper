@@ -26,7 +26,7 @@
 4. ONNX model中的所有属性均合法
 
 ### 1. Dropout remove
-![dropout remove](/docs/picture/graphviz/001_dropout_remove/dropout_remove.png)  
+![dropout remove](picture/graphviz/001_dropout_remove/dropout_remove.png)  
 ##### 类型：
 假指令移除
 ##### 原理：
