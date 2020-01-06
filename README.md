@@ -1,12 +1,17 @@
 ## Introduction
 - ##### onnx model optimize optimizer
   - Modify onnx operator, 
-  - optimize the graph.
+  - Optimize the graph.
   - See details in [YKX ONNX Operator Converter.](/docs/Operator_Converter.md)
 
 - ##### onnx model editor
-   - export onnx model config and weight, 
-   - modity the model by config, 
+   - Export onnx model config and weight, 
+   - Modity the model by config and weight
+   - Create new model by config and weight
+
+- ##### onnx model checker
+   - Check if operation is supported
+   - Produce visual results
 
 
 ## Environment
