@@ -35,10 +35,7 @@ def run_all_pass(graph):
 
 def check_convert(grapg):
     ret = False
-
     pass
-
-
 
 
 if __name__ == "__main__":
