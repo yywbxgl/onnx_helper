@@ -3,6 +3,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import onnx
 from graphviz import Digraph
+import logging
+logger = logging.getLogger(__name__)
 
 from checker import operator_list
 from IR import pb_to_ir
@@ -41,6 +43,43 @@ def ir_dot2(ir_graph):
 
     # g.save()
     g.view()
+
+
+def ir_op_check(ir_graph):
+
+    ret = True
+    g = Digraph('G', filename='test', format='png')
+    g.attr(rankdir='TB')
+    g.attr('node', shape='box', color="red", style='filled')
+    logger.info("check graph operator...")
+    for node in ir_graph.node_list:
+        for i in node.input:
+            if i.name == ir_graph.input.name:
+                g.edge("Input", node.name, label=str(ir_graph.input.dims))
+        for i in node.output:
+            if i.name == ir_graph.output.name:
+                g.edge(node.name, "Output", label=str(ir_graph.output.dims))
+        for node2 in node.next_node:
+            for out in node.output:
+                if out in node2.input:
+                    g.edge(node.name, node2.name, label=str(out.dims))
+        if node.op_type in operator_list.skym_operator_list:
+            g.node(node.name, color="green", style='filled')
+            logger.debug(" %s ", node.op_type)
+        elif node.op_type in operator_list.nbdla_operator_list:
+            g.node(node.name, color="yellow", style='filled')
+            logger.warn(" %s not support. ", node.op_type)
+            ret = False
+        else:
+            logger.warn(" %s not support. ", node.op_type)
+            ret = False
+
+    g.node("Input", color="green", style='filled')
+    g.node("Output", color="green", style='filled')
+
+    # g.save()
+    # g.view()
+    return ret
 
 if __name__ == "__main__":
 

@@ -18,8 +18,10 @@ logger = logging.getLogger(__name__)
 from IR import pb_to_ir
 from IR import ir_to_pb
 from optimizer import operator_convert
+from checker import onnx_check
+from optimizer.onnxsim import onnx_simplifier
 
-def onnx_opmize(model_path):
+def onnx_optmize(model_path):
 
     original_model = onnx.load(model_path)
 
@@ -49,13 +51,23 @@ def onnx_opmize(model_path):
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 3:
-        print ("Usage:", sys.argv[0], "onnx_model  output_model")
+    if len(sys.argv) <2:
+        print ("Usage:", sys.argv[0], "onnx_model  [output_model]")
         sys.exit(-1)
+
+    input_file = sys.argv[1]
+    output_file = input_file.split(".onnx")[0] + "_optimized.onnx"
+    if (len(sys.argv) == 3):
+        output_file = sys.argv[2]
+
+
+    # ---- step0. onnx simplifier.fix bug https://github.com/onnx/onnx/issues/2417
+    onnx_sim = onnx_simplifier.simplify(sys.argv[1], check_n=1, perform_optimization=True, input_shapes={})
+    onnx.save(onnx_sim, output_file)
 
     # ---- step1. optimize ir graph
     # pb_to_ir
-    graph = pb_to_ir.convert(sys.argv[1])
+    graph = pb_to_ir.convert(output_file)
     graph.dump()
 
     # ir graph optimize
@@ -64,11 +76,8 @@ if __name__ == "__main__":
   
     # pb_to_ir
     onnx_model = ir_to_pb.convert(graph)
-    logger.info('save onnx model ...')
-    onnx.save(onnx_model, sys.argv[2]+".onnx")
-
-    # ---- step2. other optimize
-    onnx_opmize(sys.argv[2]+".onnx")
+    logger.info('save onnx model %s ...', output_file)
+    onnx.save(onnx_model, output_file)
 
     # ---- step3. check inference reslut
     # check model, inference compare
@@ -82,14 +91,19 @@ if __name__ == "__main__":
     output_1 = session_1.run(input_data)
     logger.info("input model test finish")
 
-    model_2 = onnx.load(sys.argv[2]+".onnx")
+    model_2 = onnx.load(output_file)
     session_2 = backend.prepare(model_2,  strict=False)
     output_2 = session_2.run(input_data)
     logger.info("output model test finish")
 
     # compare result
-    np.testing.assert_almost_equal(output_1, output_2)
+    np.testing.assert_allclose(output_1, output_2, rtol=1e-3    , atol=1e-4)
     logger.info("test ok")
 
-
+    # ---- step4.check  operator support
+    ret = onnx_check.ir_op_check(graph)
+    if ret == False:
+        logger.warn("onnx operator check not pass!")
+    else:
+        logger.info("check pass")
 
