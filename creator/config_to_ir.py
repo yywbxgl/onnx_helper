@@ -54,9 +54,16 @@ def parse_attr_to_value(line):
     name = temp.split(";", 1)[0].strip()   # 用","分割一次，第一个值为name
     value = temp.split(";", 1)[1].strip()  # 用","分割一次，第二个值为attribute的值
     out.name = name
-    out.data = eval(value)
-    out.dims = len(out.data)
-    if out.dims == 1:
+
+    # ps 区分 int 与 ints属性
+    data = eval(value)
+    if type(data) == type([]):
+        out.data = data
+        out.dims.append(len(out.data))
+    else:
+        out.data.append(data)
+        
+    if len(out.dims) == 0:
         if type(out.data[0]) == type(1.0):
             out.data_type = 1
         elif type(out.data[0]) == type(1):

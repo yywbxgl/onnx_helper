@@ -154,6 +154,7 @@ def eliminate_const_nodes(model: onnx.ModelProto, const_nodes: List[onnx.NodePro
     """
     for node in model.graph.node[:]:
         if node in const_nodes:
+            # print("---- node=", node.name, node.op_type, node.output[0])
             assert len(node.output) == 1
             node.op_type = 'Constant'
             elem_type = get_elem_type(model, node.output[0])

@@ -59,7 +59,7 @@ def protoAttribute_to_irValue(proto_attribute):
     # 注意pb中 AttributeType的type 与 ValueInfo中的type 定义不同
     attr.data_type = proto_attribute.type 
     if proto_attribute.type  <= 5:
-        attr.dims.append(1)
+        # len(attr.dims) = 0  表示标量
         if proto_attribute.type == 1: 
             attr.data.append(proto_attribute.f)
         if proto_attribute.type == 2: 

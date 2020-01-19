@@ -49,8 +49,10 @@ def exportConfig(ir_graph):
             if attr.data_type in [5, 9, 10]:
                 print("!!! can not parse attr. data type=", attr.data_type)
                 sys.exit(-1)
-            config += "\tattr: " + attr.name + split_str + str(attr.data) + "\n"
-
+            if len(attr.dims) != 0:
+                config += "\tattr: " + attr.name + split_str + str(attr.data) + "\n"
+            else:
+                config += "\tattr: " + attr.name + split_str + str(attr.data[0]) + "\n"
         config += "}\n"
 
     print(config)

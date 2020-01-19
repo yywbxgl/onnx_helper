@@ -20,7 +20,7 @@ def exportModel(onnx_model, save_dir):
     # save config file
     print("export config ...")
     config = ir_to_config.exportConfig(ir_graph)
-    file_name = os.path.join(save_dir, ir_graph.name) + "_cfg.txt"
+    file_name = os.path.join(save_dir, "config.txt")
     ir_to_config.save_config(config, file_name)
 
     # save weight
@@ -41,8 +41,9 @@ def exportModel(onnx_model, save_dir):
 
 # 通过配置文件以及参数文件生成一个onnx model
 # 如果参数文件不存在，则参数值根据dims随机填充
-def createModel(config, weight_dir="./"):
+def createModel(weight_dir, output_mode):
     files= os.listdir(weight_dir)
+    config = os.path.join(weight_dir, 'config.txt')
     ir_graph = config_to_ir.importConfig(config)
 
     # 从npy文件初始化weight
@@ -62,7 +63,7 @@ def createModel(config, weight_dir="./"):
                     w.data_type = 7
 
     model = ir_to_pb.convert(ir_graph)
-    file_name = os.path.join(weight_dir, ir_graph.name + ".onnx")
+    file_name = output_mode
     onnx.save(model, file_name)
 
     print("save model %s success"%(file_name))

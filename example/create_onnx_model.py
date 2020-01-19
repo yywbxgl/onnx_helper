@@ -6,7 +6,7 @@ from creator import ir_creator
 if __name__ == "__main__":
 
     if len(sys.argv) != 3:
-        print ("Usage:", sys.argv[0], "config_file  weight_path")
+        print ("Usage:", sys.argv[0], "config_path  output_model")
         sys.exit(-1)
     
     # create model
