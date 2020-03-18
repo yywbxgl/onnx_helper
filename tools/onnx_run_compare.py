@@ -20,7 +20,7 @@ session2 = backend.prepare(model2)
 
 
 # get input data
-x = np.random.randn(1, 3, 224, 224).astype(np.float32) 
+x = np.random.randn(1, 3, 299, 299).astype(np.float32) 
 # print(x)
 
 # Run the model on the backend
