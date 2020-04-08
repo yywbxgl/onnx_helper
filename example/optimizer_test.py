@@ -21,10 +21,8 @@ from optimizer import operator_convert
 from checker import onnx_check
 from optimizer.onnxsim import onnx_simplifier
 
-def onnx_optmize(model_path):
-
-    original_model = onnx.load(model_path)
-
+def onnx_optmize(input_mode, output_model):
+    original_model = onnx.load(input_mode)
     all_passes = optimizer.get_available_passes()
     logger.info("Available optimization passes:")
     for p in all_passes:
@@ -35,18 +33,18 @@ def onnx_optmize(model_path):
     # passes.append('eliminate_unused_initializer')
     # passes.append('extract_constant_to_initializer')
     # passes.append('eliminate_deadend')
-    passes.append('eliminate_nop_transpose')
-    passes.append('fuse_add_bias_into_conv')
-    passes.append('fuse_bn_into_conv')
+    #passes.append('eliminate_nop_transpose')
+    #passes.append('fuse_add_bias_into_conv')
+    #passes.append('fuse_bn_into_conv')
     passes.append('fuse_matmul_add_bias_into_gemm')
-    passes.append('fuse_transpose_into_gemm')
+    #passes.append('fuse_transpose_into_gemm')
     logger.info("passes: %s", passes)
 
     optimized_model = optimizer.optimize(original_model, passes)
     inferred_model = shape_inference.infer_shapes(optimized_model)
     onnx.checker.check_model(inferred_model)
-    onnx.save(optimized_model, model_path)
-    logger.info('optimize finish. save model to %s', model_path)
+    onnx.save(optimized_model, output_model)
+    logger.info('optimize finish. save model to %s', output_model)
 
 
 if __name__ == "__main__":
@@ -64,6 +62,8 @@ if __name__ == "__main__":
     # ---- step0. onnx simplifier.fix bug https://github.com/onnx/onnx/issues/2417
     onnx_sim = onnx_simplifier.simplify(sys.argv[1], check_n=1, perform_optimization=True, input_shapes={})
     onnx.save(onnx_sim, output_file)
+    
+    # onnx_optmize(input_file, output_file)
 
     # ---- step1. optimize ir graph
     # pb_to_ir

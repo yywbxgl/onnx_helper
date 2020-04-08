@@ -19,9 +19,17 @@ model2 = onnx.load(sys.argv[2])
 session2 = backend.prepare(model2)
 
 
+# get input size
+input_size = []
+for i in model1.graph.input[0].type.tensor_type.shape.dim:
+    input_size.append(i.dim_value)
+print("input_name:", model1.graph.input[0].name)
+print("input_size:", input_size)
+
+
 # get input data
-x = np.random.randn(1, 3, 299, 299).astype(np.float32) 
-# print(x)
+x = np.random.random(input_size).astype(np.float32)*100
+
 
 # Run the model on the backend
 print("onnx run 1 ...")
