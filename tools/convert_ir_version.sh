@@ -1,7 +1,7 @@
 #!/bin/sh -v
 
 echo "convert model to ir_version 3：$1";
-rm  ../example/out/*
+rm  ../example/out/  -r
 
 
 sudo pip3 install onnx --upgrade

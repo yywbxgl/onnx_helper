@@ -3,4 +3,6 @@ test*
 *.onnx
 *.png
 *.code-workspace
-
+*.h5
+*.nbdla
+*.pb
