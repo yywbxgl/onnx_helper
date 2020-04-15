@@ -23,7 +23,7 @@ def match_conditions(node):
                 if axes == temp:
                     return True
                 else:
-                    logger.error("can not convert axes= %d", axes)
+                    logger.error("can not convert axes  %s to  %s", temp, axes)
                     return False
 
     return False

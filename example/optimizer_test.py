@@ -66,8 +66,8 @@ if __name__ == "__main__":
     logger.info("change version to 3/8")
     onnx_model.ir_version=3
     onnx_model.opset_import[0].version = 8
-    file_name = output_file + "onnx_ir3.onnx"
-    loadable_name = output_file + "onnx_ir3.nbdla"
+    file_name = output_file + "_ir3.onnx"
+    loadable_name = output_file + "_ir3.nbdla"
     logger.info('save onnx model %s ...', file_name)
     onnx.save(onnx_model, file_name)
     onnx_simplifier.test_conveted_model(onnx_ori, file_name)

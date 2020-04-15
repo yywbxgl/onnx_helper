@@ -92,27 +92,26 @@ def test_conveted_model(model_ori, model_opt, input_shape=None):
 
 def delete_default_attr(model):
     for node in model.graph.node:
-        # maxpool   ceil_model=0 ; auto_pad= "NOTSET"
-        if node.op_type == "MaxPool":
+        # conv/pool   ceil_model=0 ; auto_pad= "NOTSET"
+        if node.op_type == "MaxPool" or node.op_type == "AveragePool":
             for i, attr in  enumerate(node.attribute):
                 if attr.name == "auto_pad":
                     if attr.s == b'NOTSET':
-                        logger.info("delete maxpool auto_pad, %s %s", node.name, attr.s)
+                        logger.info("delete attr auto_pad, %s %s", node.name, attr.s)
                         node.attribute.pop(i)
             for i, attr in  enumerate(node.attribute):
                 if attr.name == "ceil_mode":
                     if attr.i == 0:
-                        logger.info("delete maxpool ceil_mode, %s %s", node.name, attr.i)
+                        logger.info("delete attr ceil_mode, %s %s", node.name, attr.i)
                         node.attribute.pop(i)
-        
-        # axis = 1 
+
+        # default axis = 1 
         if node.op_type == "Softmax":
             for i, attr in  enumerate(node.attribute):
                 if attr.name == "axis":
-                    if attr.i == -1 :
+                    if attr.i == 1 or  attr.i == -1: # ps: 当input [n*c*h*w] 的n为1时，softmax的axis=-1 等价于axis=1 
                         logger.info("delete softmax axis, %s %d", node.name, attr.i)
                         node.attribute.pop(i)
-
     return model
 
 
@@ -148,12 +147,12 @@ def simplify(model, input_shape=None):
     "eliminate_nop_transpose",
     "eliminate_unused_initializer",
     "extract_constant_to_initializer",
-    "fuse_consecutive_concats",
-    "fuse_add_bias_into_conv",
-    "fuse_bn_into_conv",
+    # "fuse_consecutive_concats",
+    # "fuse_add_bias_into_conv",
+    # "fuse_bn_into_conv",
     "fuse_matmul_add_bias_into_gemm",
-    "fuse_pad_into_conv",
-    "fuse_transpose_into_gemm",
+    # "fuse_pad_into_conv",
+    # "fuse_transpose_into_gemm",
     ]
     onnx_model = optimizer.optimize(onnx_model, passes)
     onnx_model = onnx.shape_inference.infer_shapes(onnx_model)
