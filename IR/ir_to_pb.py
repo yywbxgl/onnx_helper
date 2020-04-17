@@ -53,6 +53,10 @@ def convert(ir_graph):
         for i in node.weight:
             temp = irValue_to_protoValueInfo(i)
             inputs.append(temp)
+        for i in node.input:  # add initializers to input
+            if i.init == True:
+                temp = irValue_to_protoValueInfo (i)
+                inputs.append(temp)
             
     # ------ make initializers -----------
     initializers = []

@@ -13,9 +13,10 @@ import coloredlogs
 fmt = "[%(levelname)-5s] [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s"
 fmt = "[%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
 # fmt = "%(filename)s:%(lineno)d %(levelname)s - %(message)s"
-coloredlogs.install(level="INFO", fmt=fmt)
+# coloredlogs.install(level="INFO", fmt=fmt)
 # coloredlogs.install(level="DEBUG", fmt=fmt)
 logger = logging.getLogger(__name__)
+logger.setLevel("INFO")
 
 
 # 获取graph的input 
@@ -58,7 +59,7 @@ def convert_auto_pad(model):
             for i, attr in  enumerate(node.attribute):
                 if attr.name == "auto_pad":
                     if attr.s == b'VALID':
-                        logger.info("convert_auto_pad, %s %s", node.name, attr.s)
+                        logger.debug("convert_auto_pad, %s %s", node.name, attr.s)
                         new_attr = helper.make_attribute("pads",[0,0,0,0])
                         node.attribute.append(new_attr)
                         node.attribute.pop(i)
@@ -110,7 +111,7 @@ def delete_default_attr(model):
             for i, attr in  enumerate(node.attribute):
                 if attr.name == "axis":
                     if attr.i == 1 or  attr.i == -1: # ps: 当input [n*c*h*w] 的n为1时，softmax的axis=-1 等价于axis=1 
-                        logger.info("delete softmax axis, %s %d", node.name, attr.i)
+                        logger.warn("delete softmax axis, %s %d", node.name, attr.i)
                         node.attribute.pop(i)
     return model
 
@@ -140,13 +141,14 @@ def simplify(model, input_shape=None):
 
     # optimize
     passes = ["eliminate_deadend", 
-    "eliminate_identity", 
-    "eliminate_nop_dropout",
-    "eliminate_nop_monotone_argmax",
-    "eliminate_nop_pad",
-    "eliminate_nop_transpose",
-    "eliminate_unused_initializer",
-    "extract_constant_to_initializer",
+    # "eliminate_identity", 
+    # "eliminate_nop_dropout",
+    # "eliminate_nop_monotone_argmax",
+    # "eliminate_nop_pad",
+    # "eliminate_nop_transpose",
+    # "eliminate_unused_initializer",
+    # "extract_constant_to_initializer",
+    
     # "fuse_consecutive_concats",
     # "fuse_add_bias_into_conv",
     # "fuse_bn_into_conv",

@@ -8,34 +8,31 @@ logger = logging.getLogger(__name__)
 
 from IR import pb_to_ir
 from checker import operator_list
-from optimizer import passes
 
 
 def run_all_pass(graph):
     logger.info("run all passes...")
-    # todo 根据命令选择不同的优化case进行运行
-    passes.eliminate_dropout.run(graph)
-    passes.eliminate_identity.run(graph)
-    passes.eliminate_pad.run(graph)
 
-    passes.convert_constant_to_init.run(graph)
-    passes.convert_shape_to_init.run(graph)
-    passes.convert_gather_to_init.run(graph)
-    passes.convert_unsuqeeze_to_init.run(graph)
-    passes.convert_concat_to_init.run(graph)
-    passes.convert_flatten_to_reshape.run(graph)
-    passes.convert_reduceMean_to_globalAveragePool.run(graph)
+    # passes.eliminate_dropout.run(graph)
+    # passes.eliminate_identity.run(graph)
+    # passes.eliminate_pad.run(graph)
 
-    passes.fuse_pad_into_averagePool.run(graph)
-    passes.fuse_pad_into_maxPool.run(graph)
-    passes.fuse_pad_into_conv.run(graph)
+    # passes.convert_constant_to_init.run(graph)
+    # passes.convert_shape_to_init.run(graph)
+    # passes.convert_gather_to_init.run(graph)
+    # passes.convert_unsuqeeze_to_init.run(graph)
+    # passes.convert_concat_to_init.run(graph)
+    # passes.convert_flatten_to_reshape.run(graph)
+    # passes.convert_reduceMean_to_globalAveragePool.run(graph)
+
+    # passes.fuse_pad_into_averagePool.run(graph)
+    # passes.fuse_pad_into_maxPool.run(graph)
+    # passes.fuse_pad_into_conv.run(graph)
+
 
     return graph
 
 
-def check_convert(grapg):
-    ret = False
-    pass
 
 
 if __name__ == "__main__":
@@ -43,8 +40,6 @@ if __name__ == "__main__":
     if len(sys.argv) != 3:
         print ("Usage:", sys.argv[0], "onnx_model  output_model")
         sys.exit(-1)
-
-    from optimizer import eliminate_node
 
     # pb_to_ir
     graph = pb_to_ir.convert(sys.argv[1])

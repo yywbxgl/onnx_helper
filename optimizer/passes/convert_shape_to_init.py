@@ -5,48 +5,44 @@ from IR import ir
 import logging
 logger = logging.getLogger(__name__)
 
-
-# 判断是否满足条件
-def match_conditions(node):
-    if node.op_type == "Shape":
-        # 需要知道上一层的形状
-        for i in node.input:
-            if len(i.dims) == 0:
-                logger.warn("input shape unkown. %s", i.dims)
-                return False
-        return True
-    return False
+from optimizer.optimizer import PassCase 
 
 
-def run_pass(graph):
-    for node in graph.node_list:
-        if match_conditions(node) == True:
-            input_shape = node.input[0].dims
-            logger.info("---- convert shape to initiliazer. %s", node.output[0].name)
-            logger.info("input_shape: %s", input_shape)
+class convert_shape_to_init(PassCase):
 
-            # 保存shape 到initilizer
-            for i in node.next_node[0].input:
-                if i.name == node.output[0].name:
-                    i.dims = [len(input_shape)]
-                    i.data = input_shape
-                    i.data_type = 7
-                    i.init = True
-
-            node.next_node[0].pre_node = []
-
-            # 删除node
-            graph.node_list.remove(node)
-            return False
-    
-    return True
-            
-            
-def run(graph):
-    finish_flag = False
-    while finish_flag == False :
-        finish_flag = run_pass(graph)
+    # 判断是否满足条件
+    def match_conditions(self, node):
+        if node.op_type == "Shape":
+            # 需要知道上一层的形状
+            for i in node.input:
+                if len(i.dims) == 0:
+                    logger.warn("input shape unkown. %s", i.dims)
+                    return False
+            return True
+        return False
 
 
+    def run_pass(self, graph):
+        for node in graph.node_list:
+            if self.match_conditions(node) == True:
+                input_shape = node.input[0].dims
+                logger.info("---- convert shape to initiliazer. %s", node.output[0].name)
+                logger.info("input_shape: %s", input_shape)
+
+                # 保存shape 到initilizer
+                for i in node.next_node[0].input:
+                    if i.name == node.output[0].name:
+                        i.dims = [len(input_shape)]
+                        i.data = input_shape
+                        i.data_type = 7
+                        i.init = True
+
+                node.next_node[0].pre_node = []
+
+                # 删除node
+                graph.node_list.remove(node)
+                return True
+        
+        return False
 
 
