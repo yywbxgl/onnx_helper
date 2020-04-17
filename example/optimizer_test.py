@@ -34,8 +34,8 @@ if __name__ == "__main__":
 
     # ---- step0. simplify onnx model
     onnx_ori = onnx.load(input_file)
-    # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
-    onnx_sim = onnx_simplifier.simplify(input_file)
+    onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
+    # onnx_sim = onnx_simplifier.simplify(input_file)
     onnx.save(onnx_sim, output_file)
 
     # ---- step1. optimize ir graph
