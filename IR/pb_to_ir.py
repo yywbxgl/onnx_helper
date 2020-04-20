@@ -96,15 +96,18 @@ def convert(onnx_model_file):
     logger.info("convert onnx model to IR ...")
     # ----- 解析 model_proto层-----------
     logger.debug("---- model info ----")
-    logger.debug("ir_version: %s", ModelProto.ir_version)
-    logger.debug("opsert_import: %s %s", ModelProto.opset_import[0].domain, ModelProto.opset_import[0].version)
-    logger.debug("producer_name: %s", ModelProto.producer_name)
-
+    logger.info("ir_version: %s", ModelProto.ir_version)
+    logger.info("opsert_import: %s %s", ModelProto.opset_import[0].domain, ModelProto.opset_import[0].version)
+    logger.info("producer_name: %s", ModelProto.producer_name)
+    
     proto_graph = ModelProto.graph
     ir_graph = ir.Graph()
     if (proto_graph.name != ""):
         ir_graph.name = proto_graph.name 
         logger.debug("graph name: %s", ir_graph.name)
+    ir_graph.ir_version = ModelProto.ir_version
+    ir_graph.opset = ModelProto.opset_import[0].version
+   
 
     # ----- 添加ir_input, ir_output -------
     init_list = [i.name for i in proto_graph.initializer]

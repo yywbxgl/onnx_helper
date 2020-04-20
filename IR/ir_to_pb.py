@@ -115,7 +115,12 @@ def convert(ir_graph):
     # print("-------------------------")
 
     # Create the model (ModelProto)
-    onnx_model = helper.make_model(graph_def, producer_name='nbdla')
+    if ir_graph.opset !=0 and ir_graph.ir_version !=0:
+        opset = helper.make_opsetid("", ir_graph.opset)
+        onnx_model = helper.make_model(graph_def, producer_name='YKX-converter', 
+            opset_imports= [opset], ir_version=ir_graph.ir_version)
+    else:
+        onnx_model = helper.make_model(graph_def, producer_name='YKX-converter')
 
     logger.info('check onnx model ...')
     onnx.checker.check_model(onnx_model)
@@ -125,5 +130,6 @@ def convert(ir_graph):
     logger.info("convert ir to pb success.")
     # logger.info('save onnx model ...')
     # onnx.save(onnx_model, "test.onnx")
+    
 
     return onnx_model

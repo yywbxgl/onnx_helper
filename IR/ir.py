@@ -31,6 +31,8 @@ class Graph:
         self.node_list = []     # graph 的网络结构, type:Node
         self.input = Value()    # graph 的输入层信息，type:value  只支持一个input
         self.output = Value()   # graph 的输出层信息，type:value  只支持一个output
+        self.ir_version = 0
+        self.opset = 0
         # self.init_dict = {}          # 存放weight数据
         # self.mid_feature_dict = {}   # 存放中间层信息
 
