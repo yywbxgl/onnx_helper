@@ -33,7 +33,6 @@ if __name__ == "__main__":
         output_file = sys.argv[2]
 
     # ---- step0. simplify onnx model
-    onnx_ori = onnx.load(input_file)
     onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
     # onnx_sim = onnx_simplifier.simplify(input_file)
     onnx.save(onnx_sim, output_file)
@@ -62,11 +61,14 @@ if __name__ == "__main__":
         "fuse_pad_into_averagePool",
         "fuse_pad_into_maxPool",
         "fuse_pad_into_conv",
+
+        "transpose_input",
     ]
     graph = Optimizer().optimize_graph(graph, pass_list)
     # graph.dump()
   
     # pb_to_ir
+    onnx_ori = onnx.load(output_file)
     onnx_model = ir_to_pb.convert(graph)
     onnx.save(onnx_model, output_file)
     logger.info('save onnx model %s ...', output_file)

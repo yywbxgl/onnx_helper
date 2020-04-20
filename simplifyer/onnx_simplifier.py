@@ -66,28 +66,48 @@ def convert_auto_pad(model):
     return model
 
 
-def test_conveted_model(model_ori, model_opt, input_shape=None):
+def test_conveted_model(model_ori, model_opt):
     if type(model_ori) == str:
         model_ori = onnx.load(model_ori)
 
     if type(model_opt) == str:
         model_opt = onnx.load(model_opt)
 
+
+    input_name = get_input_names(model_ori)[0]
+    input_shape_ori = []
+    for i in model_ori.graph.input:
+        if i.name == input_name:
+            input_shape_ori = [t.dim_value for t in i.type.tensor_type.shape.dim]
+
     input_name = get_input_names(model_opt)[0]
-    input_s = input_shape
+    input_shape_opt = []
     for i in model_opt.graph.input:
         if i.name == input_name:
-            input_s = [t.dim_value for t in i.type.tensor_type.shape.dim]
-    logger.info("test data: %s", input_s)
-    input_data = np.random.randint(0,255, size=input_s).astype(np.float32)
+            input_shape_opt = [t.dim_value for t in i.type.tensor_type.shape.dim]
+
+    # 如果ori model的为动态输入  那么使用opt model的输入
+    if 0 in input_shape_ori:
+        input_shape_ori = input_shape_opt
+
+    input_data = np.random.randint(0,255, size=input_shape_ori).astype(np.float32)
+    logger.info("test model_ori %s", input_data.shape)
     session_1 = backend.prepare(model_ori,  strict=False)
     output_1 = session_1.run(input_data)
     logger.debug("model_ori finish")
 
+    # transpose input shape
+    [n,c,h,w] = input_shape_opt
+    if input_data.shape == (n,h,w,c):
+        logger.info("transpose input shape  %s to %s ", list(input_data.shape), input_shape_opt)
+        input_data = np.transpose(input_data, [0,3,1,2])
+
+    logger.info("test model_opt %s",  input_data.shape)
     session_2 = backend.prepare(model_opt,  strict=False)
     output_2 = session_2.run(input_data)
     logger.debug("model_opt finish")
-    np.testing.assert_allclose(output_1, output_2, rtol=1e-3    , atol=1e-4)
+
+    np.testing.assert_allclose(output_1, output_2, rtol=1e-3, atol=1e-4)
     logger.info("test pass")
 
 
@@ -173,7 +193,7 @@ def simplify(model, input_shape=None):
     # onnx_model = change_version(onnx_model)
 
     # test converted model
-    test_conveted_model(model_ori, onnx_model, input_shape)
+    test_conveted_model(model_ori, onnx_model)
 
     return onnx_model
 
