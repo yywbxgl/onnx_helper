@@ -63,6 +63,7 @@ if __name__ == "__main__":
         "fuse_pad_into_conv",
 
         "transpose_input",
+        "transpose_into_reshape",
     ]
     graph = Optimizer().optimize_graph(graph, pass_list)
     # graph.dump()
@@ -95,6 +96,7 @@ if __name__ == "__main__":
 
     complier = "../tools/ys11_bin_onnc.nv_large  "
     cmd = complier + file_name + "  -o " + loadable_name
-    os.system(cmd)
-    logger.info('save loadable %s ...', loadable_name)
+    ret = os.system(cmd)
+    if ret != 256:
+        logger.info('compile success. save loadable %s ...', loadable_name)
 

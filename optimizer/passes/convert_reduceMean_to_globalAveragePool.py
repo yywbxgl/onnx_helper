@@ -28,7 +28,7 @@ class convert_reduceMean_to_globalAveragePool(PassCase):
                     if axes == temp:
                         return True
                     else:
-                        logger.error("can not convert axes  %s to  %s", temp, axes)
+                        logger.warn("can not convert axes  %s to  %s", temp, axes)
                         return False
 
         return False

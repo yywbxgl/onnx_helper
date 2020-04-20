@@ -27,6 +27,7 @@ class Optimizer():
         from optimizer.passes.fuse_pad_into_conv import fuse_pad_into_conv
         from optimizer.passes.fuse_pad_into_maxPool import fuse_pad_into_maxPool
         from optimizer.passes.transpose_input import transpose_input
+        from optimizer.passes.transpose_into_reshape import transpose_into_reshape
 
         self.passes_manager= {}
         
@@ -47,6 +48,8 @@ class Optimizer():
         self.passes_manager["fuse_pad_into_maxPool"] = fuse_pad_into_maxPool()
 
         self.passes_manager["transpose_input"] = transpose_input()
+        self.passes_manager["transpose_into_reshape"] = transpose_into_reshape()
+
 
 
     # 获取当前支持的optimize选项
