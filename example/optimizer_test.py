@@ -64,6 +64,7 @@ if __name__ == "__main__":
 
         "transpose_input",
         "transpose_into_reshape",
+        "transpose_into_reducemean",
     ]
     graph = Optimizer().optimize_graph(graph, pass_list)
     # graph.dump()

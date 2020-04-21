@@ -28,6 +28,8 @@ class Optimizer():
         from optimizer.passes.fuse_pad_into_maxPool import fuse_pad_into_maxPool
         from optimizer.passes.transpose_input import transpose_input
         from optimizer.passes.transpose_into_reshape import transpose_into_reshape
+        from optimizer.passes.transpose_into_reducemean import transpose_into_reducemean
+
 
         self.passes_manager= {}
         
@@ -49,7 +51,7 @@ class Optimizer():
 
         self.passes_manager["transpose_input"] = transpose_input()
         self.passes_manager["transpose_into_reshape"] = transpose_into_reshape()
-
+        self.passes_manager["transpose_into_reducemean"] = transpose_into_reducemean()
 
 
     # 获取当前支持的optimize选项
@@ -73,6 +75,7 @@ class Optimizer():
         optimized_flag = False
         while 1:
             if self.passes_manager[pass_name].run_pass(graph) == True:
+                graph.updata_graph()
                 optimized_flag = True
             else:
                 break

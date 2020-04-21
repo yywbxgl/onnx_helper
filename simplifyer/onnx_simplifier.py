@@ -63,6 +63,43 @@ def convert_auto_pad(model):
                         new_attr = helper.make_attribute("pads",[0,0,0,0])
                         node.attribute.append(new_attr)
                         node.attribute.pop(i)
+                    elif attr.s == b"SAME_UPPER" or attr.s == b"SAME_LOWER":
+                        kernal_shape = None
+                        stride = None
+                        for attr2 in node.attribute:
+                            if attr2.name == "kernel_shape":
+                                kernal_shape = attr2.ints 
+                            elif attr2.name == "strides":
+                                stride = attr2.ints    
+                        logger.info("convert_auto_pad: %s,  kernal_shape: %s, stride:%s", attr.s, kernal_shape, stride)
+                        
+                        if kernal_shape == None or stride == None:
+                            logger.warn("can not find kernal_shape and stride.")
+                        
+                        # output_shape = ceil (input_size/stride)  当stride ==1 时 shape形状不变
+                        total_pad_h = kernal_shape[0] - stride[0]
+                        total_pad_h_left = total_pad_h_right = total_pad_h//2
+                        total_pad_w = kernal_shape[1] - stride[1]
+                        total_pad_w_left = total_pad_w_right = total_pad_w//2
+                        # logger.warn(" total_pad  %s  %s", total_pad_h, total_pad_w)
+                        if total_pad_h % 2 == 1:
+                            if attr.s == b"SAME_UPPER":
+                                total_pad_h_left = total_pad_h_left + 1
+                            else:
+                                total_pad_h_right = total_pad_h_right +1
+                    
+                        if total_pad_w % 2 == 1:
+                            if attr.s == b"SAME_UPPER":
+                                total_pad_w_left = total_pad_w_left + 1
+                            else:
+                                total_pad_w_right = total_pad_w_right +1
+
+                        # 添加pads属性  删除auto_pad
+                        new_attr = helper.make_attribute("pads",[total_pad_h_left,total_pad_w_left,total_pad_h_right,total_pad_w_right])
+                        logger.info("convert to pads  %s ", [total_pad_h_left,total_pad_w_left,total_pad_h_right,total_pad_w_right])
+                        node.attribute.append(new_attr)
+                        node.attribute.pop(i)
+
     return model
 
 
@@ -107,7 +144,7 @@ def test_conveted_model(model_ori, model_opt):
     output_2 = session_2.run(input_data)
     logger.debug("model_opt finish")
 
-    np.testing.assert_allclose(output_1, output_2, rtol=1e-3, atol=1e-4)
+    np.testing.assert_allclose(output_1, output_2, rtol=1e-2, atol=1e-3)
     logger.info("test pass")
 
 
@@ -160,8 +197,9 @@ def simplify(model, input_shape=None):
         onnx.checker.check_model(onnx_model)
 
     # optimize
-    passes = ["eliminate_deadend", 
-    # "eliminate_identity", 
+    passes = [
+    "eliminate_deadend", 
+    "eliminate_identity", 
     # "eliminate_nop_dropout",
     # "eliminate_nop_monotone_argmax",
     # "eliminate_nop_pad",

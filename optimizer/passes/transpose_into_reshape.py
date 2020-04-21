@@ -16,9 +16,9 @@ class transpose_into_reshape(PassCase):
                 # tranpose 参数[0,2,3,1]的情况  且 input_data 
                 if attr.name == "perm" and attr.data == [0,2,3,1] and node.next_node[0].op_type == "Reshape":
                     logger.debug("transpose %s, pem %s", node.input[0].dims, attr.data)
-                    # reshape的shape参数为(0,-1) 表示压缩成1维数据
                     [a,b,c,d] = node.input[0].dims
-                    if [a,c,d] == [1,1,1] and node.next_node[0].weight[0].data == [0,-1]:
+                    # reshape的outoput是（1，x）的情况
+                    if [a,c,d] == [1,1,1] and len(node.next_node[0].output[0].dims) == 2 and node.next_node[0].output[0].dims[0] ==1:
                         return True
                 
         return False

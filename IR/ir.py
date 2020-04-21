@@ -69,7 +69,7 @@ class Graph:
 
     # 更新graph的名称以及pre_node和next_node
     def updata_graph(self):
-        logger.info("updata graph.")
+        logger.debug("updata graph.")
         # ----- 初始化-------
         for node in self.node_list:
             node.pre_node = []
