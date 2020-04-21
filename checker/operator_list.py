@@ -14,7 +14,7 @@ skym_operator_list = [
 "Softmax",
 "Sum",
 "Unsqueeze",
-"Transpose",
+# "Transpose",
 ]
 
 nbdla_operator_list = [

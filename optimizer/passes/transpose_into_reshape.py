@@ -14,7 +14,7 @@ class transpose_into_reshape(PassCase):
         if node.op_type == "Transpose":
             for attr in node.attribute:
                 # tranpose 参数[0,2,3,1]的情况  且 input_data 
-                if attr.name == "perm" and attr.data == [0,2,3,1] and node.next_node[0].op_type == "Reshape":
+                if len(node.input[0].dims) == 4 and attr.name == "perm" and attr.data == [0,2,3,1] and node.next_node[0].op_type == "Reshape":
                     logger.debug("transpose %s, pem %s", node.input[0].dims, attr.data)
                     [a,b,c,d] = node.input[0].dims
                     # reshape的outoput是（1，x）的情况
