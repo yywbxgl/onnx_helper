@@ -16,7 +16,7 @@ fmt = "[%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
 # coloredlogs.install(level="INFO", fmt=fmt)
 # coloredlogs.install(level="DEBUG", fmt=fmt)
 logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
+# logger.setLevel(logging.DEBUG)
 
 
 # 获取graph的input 
@@ -71,32 +71,72 @@ def convert_auto_pad(model):
                                 kernal_shape = attr2.ints 
                             elif attr2.name == "strides":
                                 stride = attr2.ints    
-                        logger.info("convert_auto_pad: %s,  kernal_shape: %s, stride:%s", attr.s, kernal_shape, stride)
+                        logger.info("convert_auto_pad: %s,  kernal_shape: %s, stride:%s",  attr.s, kernal_shape, stride)
                         
                         if kernal_shape == None or stride == None:
                             logger.warn("can not find kernal_shape and stride.")
+                            break
+
+                        # # output_shape = ceil (input_size/stride)  当stride ==1 时 shape形状不变
+                        # total_pad_h = kernal_shape[0] - stride[0]
+                        # total_pad_h_left = total_pad_h_right = total_pad_h//2
+                        # total_pad_w = kernal_shape[1] - stride[1]
+                        # total_pad_w_left = total_pad_w_right = total_pad_w//2
+
+                        input_shape = []
+                        output_shape = []
+                        # logger.warn([o.name for o in model.graph.value_info])
+                        for o in model.graph.value_info:
+                            if o.name == node.input[0]:
+                                input_shape = [t.dim_value for t in o.type.tensor_type.shape.dim]
+                                logger.debug("get input shape %s", input_shape)
+                            if o.name == node.output[0]:
+                                output_shape = [t.dim_value for t in o.type.tensor_type.shape.dim]
+                                logger.debug("get output shape %s", output_shape)
                         
-                        # output_shape = ceil (input_size/stride)  当stride ==1 时 shape形状不变
-                        total_pad_h = kernal_shape[0] - stride[0]
-                        total_pad_h_left = total_pad_h_right = total_pad_h//2
-                        total_pad_w = kernal_shape[1] - stride[1]
-                        total_pad_w_left = total_pad_w_right = total_pad_w//2
-                        # logger.warn(" total_pad  %s  %s", total_pad_h, total_pad_w)
-                        if total_pad_h % 2 == 1:
-                            if attr.s == b"SAME_UPPER":
-                                total_pad_h_left = total_pad_h_left + 1
+                        if len(input_shape) == 0:
+                            logger.warn("can not get input shape.")
+                            break
+
+                        
+                        input_h = input_shape[2]
+                        input_w = input_shape[3]
+                        output_h = output_shape[2]
+                        output_w = output_shape[3]
+
+                        # output_shape = ceil(input_size/stride)
+                        # stride = 1 时  pad = kernal_shape - stride
+                        pad_h = (output_h -1)*stride[0] + kernal_shape[0] - input_h
+                        pad_w = (output_w -1)*stride[1] + kernal_shape[1] - input_w
+                        
+                        if pad_h < 0 or  pad_w < 0 :
+                            pad_h = pad_h + stride[0] -1
+                            pad_w = pad_w + stride[1] -1
+                            logger.warn("convert pad value. %s  %s", pad_h, pad_w)
+                            if pad_h < 0 or  pad_w < 0 :
+                                logger.warn("can not support %s  %s", pad_h, pad_w)
+                                break
+
+                        pad_h_left = pad_h_right = pad_h//2
+                        pad_w_left = pad_w_right = pad_w//2
+                        if pad_h % 2 == 1:
+                            if attr.s == b"SAME_LOWER":
+                                pad_h_left = pad_h_left + 1
                             else:
-                                total_pad_h_right = total_pad_h_right +1
-                    
-                        if total_pad_w % 2 == 1:
-                            if attr.s == b"SAME_UPPER":
-                                total_pad_w_left = total_pad_w_left + 1
+                                pad_h_right = pad_h_right + 1
+                        if pad_w % 2 == 1:
+                            if attr.s == b"SAME_LOWER":
+                                pad_w_left = pad_w_left + 1
                             else:
-                                total_pad_w_right = total_pad_w_right +1
+                                pad_w_right = pad_w_right + 1
+                        
 
                         # 添加pads属性  删除auto_pad
-                        new_attr = helper.make_attribute("pads",[total_pad_h_left,total_pad_w_left,total_pad_h_right,total_pad_w_right])
-                        logger.info("convert to pads  %s ", [total_pad_h_left,total_pad_w_left,total_pad_h_right,total_pad_w_right])
+                        new_attr = helper.make_attribute("pads",[pad_h_left,pad_w_left,pad_h_right,pad_w_right])
+                        if stride[0] != 1 or stride[1] != 1:
+                            logger.warn("stride= %s, convert to pads %s ",stride, [pad_h_left,pad_w_left,pad_h_right,pad_w_right])
+                        else:
+                            logger.info("convert to pads %s ", [pad_h_left,pad_w_left,pad_h_right,pad_w_right])
                         node.attribute.append(new_attr)
                         node.attribute.pop(i)
 
@@ -144,7 +184,7 @@ def test_conveted_model(model_ori, model_opt):
     output_2 = session_2.run(input_data)
     logger.debug("model_opt finish")
 
-    np.testing.assert_allclose(output_1, output_2, rtol=1e-2, atol=1e-3)
+    np.testing.assert_allclose(output_1, output_2, rtol=1e-3, atol=1e-4)
     logger.info("test pass")
 
 
