@@ -16,18 +16,19 @@ class transpose_eliminate(PassCase):
     def get_match_transpose(self, ir_graph):
         find_flag_1 = find_flag_2 = False
         for node in ir_graph.node_list:
-            for attr in node.attribute:
-                # todo 暂时只支持transpose 一个输出
-                if len(node.input[0].dims) == 4 and attr.name == "perm" and attr.data == [0,2,3,1] and len(node.next_node) == 1:
-                    input_shape_1 = node.input[0].dims
-                    output_shape_1 = node.output[0].dims
-                    find_flag_1 = True
-                    find_node_1 = node.name
-                elif len(node.input[0].dims) == 4 and attr.name == "perm" and attr.data == [0,3,1,2] and len(node.next_node) == 1:
-                    input_shape_2 = node.input[0].dims
-                    output_shape_2 = node.output[0].dims
-                    find_flag_2 = True
-                    find_node_2 = node.name
+            if node.op_type == "Transpose":
+                for attr in node.attribute:
+                    # todo 暂时只支持transpose 一个输出
+                    if len(node.input[0].dims) == 4 and attr.name == "perm" and attr.data == [0,2,3,1] and len(node.next_node) == 1:
+                        input_shape_1 = node.input[0].dims
+                        output_shape_1 = node.output[0].dims
+                        find_flag_1 = True
+                        find_node_1 = node.name
+                    elif len(node.input[0].dims) == 4 and attr.name == "perm" and attr.data == [0,3,1,2] and len(node.next_node) == 1:
+                        input_shape_2 = node.input[0].dims
+                        output_shape_2 = node.output[0].dims
+                        find_flag_2 = True
+                        find_node_2 = node.name
 
             if find_flag_1 == True and find_flag_2 == True:
                 break

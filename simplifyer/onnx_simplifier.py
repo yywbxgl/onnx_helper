@@ -50,6 +50,13 @@ def update_input_output_shape(model, input_shape):
             for num, val in enumerate(i.type.tensor_type.shape.dim):
                 val.dim_value = input_shape[num]
             logger.info("change input shape:%s", input_shape)
+
+	# 修改output  0->1
+    for t in model.graph.output:
+        for dims in  t.type.tensor_type.shape.dim:
+            if dims.dim_value == 0:
+                dims.dim_value = 1
+
     return model
 
 
@@ -239,7 +246,7 @@ def simplify(model, input_shape=None):
     # optimize
     passes = [
     "eliminate_deadend", 
-    "eliminate_identity", 
+    # "eliminate_identity", 
     # "eliminate_nop_dropout",
     # "eliminate_nop_monotone_argmax",
     # "eliminate_nop_pad",

@@ -36,6 +36,7 @@ if __name__ == "__main__":
     onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
     # onnx_sim = onnx_simplifier.simplify(input_file)
     onnx.save(onnx_sim, output_file)
+    logger.info('save simplified model: %s ...', output_file)
 
     # ---- step1. optimize ir graph
     # pb_to_ir
@@ -69,6 +70,8 @@ if __name__ == "__main__":
 
         "transpose_eliminate",
         "transpose_swap",
+
+        "cast_to_init",
     ]
 
     graph = Optimizer().optimize_graph(graph, pass_list)
