@@ -29,7 +29,8 @@ class Optimizer():
         from optimizer.passes.transpose_input import transpose_input
         from optimizer.passes.transpose_into_reshape import transpose_into_reshape
         from optimizer.passes.transpose_into_reducemean import transpose_into_reducemean
-
+        from optimizer.passes.transpose_eliminate import transpose_eliminate
+        from optimizer.passes.transpose_swap import transpose_swap
 
         self.passes_manager= {}
         
@@ -52,6 +53,8 @@ class Optimizer():
         self.passes_manager["transpose_input"] = transpose_input()
         self.passes_manager["transpose_into_reshape"] = transpose_into_reshape()
         self.passes_manager["transpose_into_reducemean"] = transpose_into_reducemean()
+        self.passes_manager["transpose_eliminate"] = transpose_eliminate()
+        self.passes_manager["transpose_swap"] = transpose_swap()
 
 
     # 获取当前支持的optimize选项

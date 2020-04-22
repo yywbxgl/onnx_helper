@@ -25,6 +25,7 @@ class transpose_into_reshape(PassCase):
 
 
     def run_pass(self, ir_graph):
+        # logger.warn("check transpose_into_reshape")
         for node in ir_graph.node_list:
             if self.match_conditions(node) == True:
                 logger.info("---- transpose into reshape %s, %s, ", node.name, node.input[0].dims)
