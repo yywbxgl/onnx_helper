@@ -67,14 +67,18 @@ if __name__ == "__main__":
         "transpose_into_reshape",
         "transpose_into_reducemean",
 
-        # "transpose_eliminate",
-        "transpose_swap",
-
         "cast_to_init",
 
         "globbalMaxPool_to_maxPool",
+
+        "reshape_consecutive_eliminate",
+        "reshape_nop_eliminate",
+
+        "transpose_swap",
+        "transpose_eliminate",
     ]
 
+    pass_list = ["transpose_eliminate"]
     graph = Optimizer().optimize_graph(graph, pass_list)
     # graph.dump()
   
@@ -86,7 +90,7 @@ if __name__ == "__main__":
 
     # test
     onnx_simplifier.test_conveted_model(onnx_ori, onnx_model)
-    
+ 
     # ---- step4.check operator support
     ret = onnx_check.ir_op_check(graph)
     if ret == False:

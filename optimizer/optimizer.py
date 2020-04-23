@@ -33,6 +33,8 @@ class Optimizer():
         from optimizer.passes.transpose_swap import transpose_swap
         from optimizer.passes.cast_to_init import cast_to_init
         from optimizer.passes.globbalMaxPool_to_maxPool import globbalMaxPool_to_maxPool
+        from optimizer.passes.reshape_consecutive_eliminate import reshape_consecutive_eliminate
+        from optimizer.passes.reshape_nop_eliminate import reshape_nop_eliminate
 
         self.passes_manager= {}
         
@@ -59,6 +61,8 @@ class Optimizer():
         self.passes_manager["transpose_swap"] = transpose_swap()
         self.passes_manager["cast_to_init"] = cast_to_init()
         self.passes_manager["globbalMaxPool_to_maxPool"] = globbalMaxPool_to_maxPool()
+        self.passes_manager["reshape_consecutive_eliminate"] = reshape_consecutive_eliminate()
+        self.passes_manager["reshape_nop_eliminate"] = reshape_nop_eliminate()
 
 
     # 获取当前支持的optimize选项

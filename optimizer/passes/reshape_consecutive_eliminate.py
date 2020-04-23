@@ -6,19 +6,17 @@ logger = logging.getLogger(__name__)
 
 from IR import ir
 from optimizer.optimizer import PassCase 
-import copy
 
 
-class eliminate_identity(PassCase):
+class reshape_consecutive_eliminate(PassCase):
     # 判断是否满足条件
     def match_conditions(self, node):
-        if node.op_type == "Identity":
-            # todo 支持并行的node删除
-            if len(node.pre_node) <=1 :
+        if node.op_type == "Reshape" and len(node.next_node) == 1:
+            # 删除连续的reshape
+            if node.next_node[0].op_type == "Reshape" and len(node.next_node[0].next_node) == 1:
                 return True
-            else:
-                logger.warn("can not eliminate node. %s", node.op_type)
         return False
+
 
     # 运行一次优化
     def run_pass(self, ir_graph):
@@ -45,7 +43,7 @@ class eliminate_identity(PassCase):
                 # 删除当前node
                 ir_graph.node_list.remove(node)
                 return True
-                
+
         return False
 
 

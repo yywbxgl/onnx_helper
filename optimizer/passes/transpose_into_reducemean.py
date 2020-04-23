@@ -11,10 +11,10 @@ import numpy as np
 class transpose_into_reducemean(PassCase):
 
     def match_conditions(self, node):
-        if node.op_type == "Transpose":
+        if node.op_type == "Transpose" and len(node.next_node) == 1 and node.next_node[0].op_type == "ReduceMean":
             for attr in node.attribute:
                 # tranpose 参数[0,2,3,1]的情况  且 input_data 
-                if attr.name == "perm" and attr.data == [0,2,3,1] and node.next_node[0].op_type == "ReduceMean":
+                if attr.name == "perm" and attr.data == [0,2,3,1] :
                     logger.info("transpose %s, pem %s", node.input[0].dims, attr.data)
                     for attr2 in node.next_node[0].attribute:
                         # 限制到参数[1,2]
