@@ -33,8 +33,8 @@ if __name__ == "__main__":
         output_file = sys.argv[2]
 
     # ---- step0. simplify onnx model
-    onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
-    # onnx_sim = onnx_simplifier.simplify(input_file)
+    # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
+    onnx_sim = onnx_simplifier.simplify(input_file)
     onnx.save(onnx_sim, output_file)
     logger.info('save simplified model: %s ...', output_file)
 
@@ -59,7 +59,6 @@ if __name__ == "__main__":
         "convert_flatten_to_reshape",
         "convert_reduceMean_to_globalAveragePool",
 
-
         "fuse_pad_into_averagePool",
         "fuse_pad_into_maxPool",
         "fuse_pad_into_conv",
@@ -68,10 +67,12 @@ if __name__ == "__main__":
         "transpose_into_reshape",
         "transpose_into_reducemean",
 
-        "transpose_eliminate",
+        # "transpose_eliminate",
         "transpose_swap",
 
         "cast_to_init",
+
+        "globbalMaxPool_to_maxPool",
     ]
 
     graph = Optimizer().optimize_graph(graph, pass_list)

@@ -27,7 +27,7 @@ class cast_to_init(PassCase):
     def run_pass(self, graph):
         for node in graph.node_list:
             if self.match_conditions(node) == True:
-                logger.warn("---- convert cast to init. %s",  node.output[0].name)
+                logger.info("---- convert cast to init. %s",  node.output[0].name)
 
                 # logger.debug(node.weight[0].name)
                 # logger.debug(node.weight[0].raw)
@@ -44,7 +44,7 @@ class cast_to_init(PassCase):
                 temp.init = True
                 temp.data = convert_utils.get_raw_data(node.weight[0])
                 temp.data_type = 7 #INT64
-                logger.warn(temp.data)
+                logger.debug(temp.data)
 
                 # 保存cast 到initilizer
                 for i in node.next_node[0].input:

@@ -13,7 +13,7 @@ class eliminate_identity(PassCase):
     def match_conditions(self, node):
         if node.op_type == "Identity":
             # todo 支持并行的node删除
-            if len(node.pre_node) <=1 and len(node.next_node)<=1:
+            if len(node.pre_node) <=1 :
                 return True
             else:
                 logger.warn("can not eliminate node. %s", node.op_type)
