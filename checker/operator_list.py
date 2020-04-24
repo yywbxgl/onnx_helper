@@ -15,6 +15,7 @@ skym_operator_list = [
 "Sum",
 "Unsqueeze",
 # "Transpose",
+"Clip",
 ]
 
 nbdla_operator_list = [

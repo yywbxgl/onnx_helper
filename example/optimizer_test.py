@@ -76,9 +76,10 @@ if __name__ == "__main__":
 
         "transpose_swap",
         "transpose_eliminate",
+
     ]
 
-    pass_list = ["transpose_eliminate"]
+    # pass_list = ["transpose_into_reshape_prenode", "reshape_nop_eliminate"]
     graph = Optimizer().optimize_graph(graph, pass_list)
     # graph.dump()
   

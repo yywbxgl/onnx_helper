@@ -28,6 +28,7 @@ class Optimizer():
         from optimizer.passes.fuse_pad_into_maxPool import fuse_pad_into_maxPool
         from optimizer.passes.transpose_input import transpose_input
         from optimizer.passes.transpose_into_reshape import transpose_into_reshape
+        from optimizer.passes.transpose_into_reshape_prenode import transpose_into_reshape_prenode
         from optimizer.passes.transpose_into_reducemean import transpose_into_reducemean
         from optimizer.passes.transpose_eliminate import transpose_eliminate
         from optimizer.passes.transpose_swap import transpose_swap
@@ -56,9 +57,11 @@ class Optimizer():
 
         self.passes_manager["transpose_input"] = transpose_input()
         self.passes_manager["transpose_into_reshape"] = transpose_into_reshape()
+        self.passes_manager["transpose_into_reshape_prenode"] = transpose_into_reshape_prenode()
+
         self.passes_manager["transpose_into_reducemean"] = transpose_into_reducemean()
         self.passes_manager["transpose_eliminate"] = transpose_eliminate()
-        self.passes_manager["transpose_swap"] = transpose_swap()
+        self.passes_manager["transpose_swap"] = transpose_swap()  # todo  fix bug
         self.passes_manager["cast_to_init"] = cast_to_init()
         self.passes_manager["globbalMaxPool_to_maxPool"] = globbalMaxPool_to_maxPool()
         self.passes_manager["reshape_consecutive_eliminate"] = reshape_consecutive_eliminate()
