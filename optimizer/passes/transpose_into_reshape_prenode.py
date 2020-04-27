@@ -43,24 +43,24 @@ class transpose_into_reshape_prenode(PassCase):
             if self.match_conditions(node) == True:
                 logger.warn("---- transpose into pre reshape  %s, %s", node.name, node.input[0].dims)
                 # 修改reshape参数
-                logger.warn(node.weight[0].name)
-                logger.warn(node.weight[0].dims)
-                logger.warn(node.weight[0].data)
-                logger.warn(node.weight[0].data_type)
-                logger.warn(node.weight[0].raw)
-                logger.warn(node.weight[0].init)
+                # logger.warn(node.weight[0].name)
+                # logger.warn(node.weight[0].dims)
+                # logger.warn(node.weight[0].data)
+                # logger.warn(node.weight[0].data_type)
+                # logger.warn(node.weight[0].raw)
+                # logger.warn(node.weight[0].init)
 
                 node.weight[0].dims = [len(node.next_node[0].output[0].dims)]
                 node.weight[0].data = node.next_node[0].output[0].dims
                 node.weight[0].raw = False
                 node.weight[0].data_type = 7
 
-                logger.warn(node.weight[0].name)
-                logger.warn(node.weight[0].dims)
-                logger.warn(node.weight[0].data)
-                logger.warn(node.weight[0].data_type)
-                logger.warn(node.weight[0].raw)
-                logger.warn(node.weight[0].init)
+                # logger.warn(node.weight[0].name)
+                # logger.warn(node.weight[0].dims)
+                # logger.warn(node.weight[0].data)
+                # logger.warn(node.weight[0].data_type)
+                # logger.warn(node.weight[0].raw)
+                # logger.warn(node.weight[0].init)
 
                 # 删除无效的transpose
                 node.next_node[0].next_node[0].input[0] = node.output[0]

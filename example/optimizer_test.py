@@ -33,8 +33,8 @@ if __name__ == "__main__":
         output_file = sys.argv[2]
 
     # ---- step0. simplify onnx model
-    # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
-    onnx_sim = onnx_simplifier.simplify(input_file)
+    onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
+    # onnx_sim = onnx_simplifier.simplify(input_file)
     onnx.save(onnx_sim, output_file)
     logger.info('save simplified model: %s ...', output_file)
 
@@ -66,6 +66,8 @@ if __name__ == "__main__":
         "transpose_input",
         "transpose_into_reshape",
         "transpose_into_reducemean",
+        "transpose_into_reshape_prenode",
+
 
         "cast_to_init",
 
@@ -74,12 +76,13 @@ if __name__ == "__main__":
         "reshape_consecutive_eliminate",
         "reshape_nop_eliminate",
 
-        "transpose_swap",
+        # "transpose_swap",
         "transpose_eliminate",
 
     ]
 
-    # pass_list = ["transpose_into_reshape_prenode", "reshape_nop_eliminate"]
+    # pass_list = ["softmax_swap_down"]
+
     graph = Optimizer().optimize_graph(graph, pass_list)
     # graph.dump()
   

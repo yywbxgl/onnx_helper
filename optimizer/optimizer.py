@@ -36,6 +36,7 @@ class Optimizer():
         from optimizer.passes.globbalMaxPool_to_maxPool import globbalMaxPool_to_maxPool
         from optimizer.passes.reshape_consecutive_eliminate import reshape_consecutive_eliminate
         from optimizer.passes.reshape_nop_eliminate import reshape_nop_eliminate
+        from optimizer.passes.softmax_swap_down import softmax_swap_down
 
         self.passes_manager= {}
         
@@ -61,11 +62,12 @@ class Optimizer():
 
         self.passes_manager["transpose_into_reducemean"] = transpose_into_reducemean()
         self.passes_manager["transpose_eliminate"] = transpose_eliminate()
-        self.passes_manager["transpose_swap"] = transpose_swap()  # todo  fix bug
+        self.passes_manager["transpose_swap"] = transpose_swap()   # warn
         self.passes_manager["cast_to_init"] = cast_to_init()
         self.passes_manager["globbalMaxPool_to_maxPool"] = globbalMaxPool_to_maxPool()
         self.passes_manager["reshape_consecutive_eliminate"] = reshape_consecutive_eliminate()
         self.passes_manager["reshape_nop_eliminate"] = reshape_nop_eliminate()
+        self.passes_manager["softmax_swap_down"] = softmax_swap_down()  # warn
 
 
     # 获取当前支持的optimize选项
@@ -114,6 +116,32 @@ class Optimizer():
                 break
         
         return graph
+
+    def eliminate_node(self, graph, node_name):
+        for node in graph.node_list:
+            if node.name == node_name:
+                # 如果不是 last_node,那么需要修改next_node.input
+                if node.output[0].name != graph.output.name:
+                    for node2 in node.next_node:
+                        for i in node2.input:
+                            if i.name == node.output[0].name:
+                                i.name  =  node.input[0].name
+                                i.dims = node.input[0].dims
+                                i.data = node.input[0].data
+                                i.data_type = node.input[0].data_type
+                                i.raw = node.input[0].raw
+                                i.init = node.input[0].init
+                else:
+                # 如果是last_node, 那么需要修改pre_node.output
+                    for node2 in node.pre_node:
+                        node2.output = node.output
+
+                # 删除当前node
+                graph.node_list.remove(node)
+                return graph
+
+        return graph
+
 
 class PassCase():
 
