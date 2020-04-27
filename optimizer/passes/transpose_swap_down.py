@@ -9,7 +9,7 @@ from optimizer.optimizer import PassCase
 import numpy as np
 import copy
 
-class transpose_swap(PassCase):
+class transpose_swap_down(PassCase):
 
     def match_conditions(self, node):
         if node.op_type == "Transpose":
@@ -31,16 +31,12 @@ class transpose_swap(PassCase):
         node2.op_type = node1.op_type
         node2.attribute = node1.attribute
         node2.weight = node1.weight
-        node2.input[0].dims = node1.input[0].dims
 
         node1.name = node_temp.name
         node1.op_type = node_temp.op_type
         node1.attribute = node_temp.attribute
         node1.weight = node_temp.weight
-        node1.output[0].dims = node_temp.input[0].dims
-
-        logger.warn(node2.name)
-        logger.warn(node1.name)
+        node1.output[0].dims = node2.outptput[0].dims
 
 
     def run_pass(self, ir_graph):
