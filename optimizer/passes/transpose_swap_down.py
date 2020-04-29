@@ -36,7 +36,7 @@ class transpose_swap_down(PassCase):
         node1.op_type = node_temp.op_type
         node1.attribute = node_temp.attribute
         node1.weight = node_temp.weight
-        node1.output[0].dims = node2.outptput[0].dims
+        node1.output[0].dims = node2.output[0].dims
 
 
     def run_pass(self, ir_graph):

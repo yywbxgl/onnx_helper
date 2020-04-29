@@ -15,12 +15,16 @@ class cast_to_init(PassCase):
         
     def match_conditions(self, node):
         if node.op_type == "Cast":
+            for i in node.input:
+                if i.init == False:
+                    return False
+
             for attr in node.attribute:
                 if attr.name == "to":
                     if attr.data == [7]:
                         return True
                     else:
-                        logger.warn("cast to %d not support.", attr.data)
+                        logger.warn("cast to %s not support.", attr.data)
         return False
 
 

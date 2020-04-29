@@ -45,16 +45,26 @@ def update_input_output_shape(model, input_shape):
     input_names = get_input_names(model)
     if len(input_names) != 1:
         print("not support multi input")
-    for i in model.graph.input:
-        if i.name == input_names[0]:
-            for num, val in enumerate(i.type.tensor_type.shape.dim):
-                val.dim_value = input_shape[num]
-            logger.info("change input shape:%s", input_shape)
+
+    if input_shape != None:
+        for i in model.graph.input:
+            if i.name == input_names[0]:
+                for num, val in enumerate(i.type.tensor_type.shape.dim):
+                    val.dim_value = input_shape[num]
+                logger.warn("change input shape:%s", input_shape)
+    
+    # 修改input  0->1
+    for t in model.graph.input:
+        for dims in  t.type.tensor_type.shape.dim:
+            if dims.dim_value == 0:
+                logger.warn("change input shape")
+                dims.dim_value = 1
 
 	# 修改output  0->1
     for t in model.graph.output:
         for dims in  t.type.tensor_type.shape.dim:
             if dims.dim_value == 0:
+                logger.warn("change output shape")
                 dims.dim_value = 1
 
     return model
@@ -238,10 +248,9 @@ def simplify(model, input_shape=None):
     onnx.checker.check_model(onnx_model)
     
     # change dynamic input 
-    if input_shape != None:
-        onnx_model = update_input_output_shape(onnx_model, input_shape)
-        onnx_model = onnx.shape_inference.infer_shapes(onnx_model)
-        onnx.checker.check_model(onnx_model)
+    onnx_model = update_input_output_shape(onnx_model, input_shape)
+    onnx_model = onnx.shape_inference.infer_shapes(onnx_model)
+    onnx.checker.check_model(onnx_model)
 
     # optimize
     passes = [

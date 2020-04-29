@@ -33,8 +33,9 @@ if __name__ == "__main__":
         output_file = sys.argv[2]
 
     # ---- step0. simplify onnx model
-    onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
-    # onnx_sim = onnx_simplifier.simplify(input_file)
+    # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
+    onnx_sim = onnx_simplifier.simplify(input_file)
+    # onnx_sim = onnx_simplifier.change_version(onnx_sim)
     onnx.save(onnx_sim, output_file)
     logger.info('save simplified model: %s ...', output_file)
 
@@ -55,9 +56,11 @@ if __name__ == "__main__":
         "convert_gather_to_init", 
         "convert_unsuqeeze_to_init",
         "convert_concat_to_init",
+        "cast_to_init",
 
         "convert_flatten_to_reshape",
         "convert_reduceMean_to_globalAveragePool",
+        "globbalMaxPool_to_maxPool",
 
         "fuse_pad_into_averagePool",
         "fuse_pad_into_maxPool",
@@ -68,17 +71,12 @@ if __name__ == "__main__":
         "transpose_into_reducemean",
         "transpose_into_reshape_prenode",
 
-
-        "cast_to_init",
-
-        "globbalMaxPool_to_maxPool",
-
         "reshape_consecutive_eliminate",
         "reshape_nop_eliminate",
 
-        # "transpose_swap",
-        "transpose_eliminate",
-
+        # "transpose_eliminate",   # 这三个慎用
+        # "softmax_swap_down",
+        # "transpose_swap_down",
     ]
 
     # pass_list = ["softmax_swap_down"]
@@ -106,6 +104,7 @@ if __name__ == "__main__":
     logger.info("change version to 3/8")
     onnx_model.ir_version=3
     onnx_model.opset_import[0].version = 8
+    onnx_model.producer_name =  "pytorch"
     file_name = output_file + "_ir3.onnx"
     loadable_name = output_file + "_ir3.nbdla"
     logger.info('save onnx model %s ...', file_name)
