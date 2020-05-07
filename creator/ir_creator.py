@@ -27,13 +27,15 @@ def exportModel(onnx_model, save_dir):
     print("export weight ...")
     for node in ir_graph.node_list:
         for w in node.weight:
+            data = np.array(w.data)
+            file_name = os.path.join(save_dir, w.name)
+            print("---", file_name)
+            if '/' in file_name:
+                (filepath,tempfilename) = os.path.split(file_name)
+                if not os.path.isdir(filepath):
+                    os.makedirs(filepath)
+
             if w.raw == False:
-                data = np.array(w.data)
-                file_name = os.path.join(save_dir, w.name)
-                if '/' in file_name:
-                    (filepath,tempfilename) = os.path.split(file_name)
-                    if not os.path.isdir(filepath):
-                        os.makedirs(filepath)
                 np.save(file_name, data)
             else:
                 data = np.array(w.data).astype(np.byte)
