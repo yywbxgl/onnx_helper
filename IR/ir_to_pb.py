@@ -51,24 +51,30 @@ def convert(ir_graph):
     logger.debug("outputs: %s", output_data.name)
     for node in ir_graph.node_list:
         for i in node.weight:
-            temp = irValue_to_protoValueInfo(i)
-            inputs.append(temp)
+            if i.name not in [t.name for t in inputs]:
+                temp = irValue_to_protoValueInfo(i)
+                inputs.append(temp)
         for i in node.input:  # add initializers to input
             if i.init == True:
-                temp = irValue_to_protoValueInfo (i)
-                inputs.append(temp)
-            
+                if i.name not in [t.name for t in inputs]:
+                    temp = irValue_to_protoValueInfo (i)
+                    inputs.append(temp)
+
+    logger.debug("inputs: %s", [i.name for i in inputs])
+
     # ------ make initializers -----------
     initializers = []
     for node in ir_graph.node_list:
         for w in node.weight:
-            init = irValue_to_protoTensor(w)
-            initializers.append(init)
+            if w.name not in [t.name for t in initializers]:
+                init = irValue_to_protoTensor(w)
+                initializers.append(init)
         for i in node.input:
             if i.init == True:
-                temp = irValue_to_protoTensor(i)
-                initializers.append(temp)
-                logger.info("add init input %s", i.name)
+                if i.name not in [t.name for t in initializers]:
+                    temp = irValue_to_protoTensor(i)
+                    initializers.append(temp)
+                    logger.info("add init input %s", i.name)
     logger.debug("initializers: %s", [i.name for i in initializers])
     
 
