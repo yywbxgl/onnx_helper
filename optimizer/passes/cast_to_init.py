@@ -21,7 +21,7 @@ class cast_to_init(PassCase):
 
             for attr in node.attribute:
                 if attr.name == "to":
-                    if attr.data == [7]:
+                    if attr.data == [7] or attr.data == [6]:
                         return True
                     else:
                         logger.warn("cast to %s not support.", attr.data)
@@ -40,25 +40,26 @@ class cast_to_init(PassCase):
                 # logger.debug(node.weight[0].dims)
                 # logger.debug(node.weight[0].data)
 
+                w_type = -1
+                for attr in node.attribute:
+                    if attr.name == "to":
+                        w_type = attr.data[0]
+
                 # 保存的int不使用raw_data
-                temp  = ir.Value()
-                temp.name = node.weight[0].name
-                temp.dims = node.weight[0].dims
-                temp.raw = False
-                temp.init = True
-                temp.data = convert_utils.get_raw_data(node.weight[0])
-                temp.data_type = 7 #INT64
-                logger.debug(temp.data)
+                if len(node.weight) != 0:
+                    data = convert_utils.get_raw_data(node.weight[0])
+                else:
+                    data = convert_utils.get_raw_data(node.input[0])
 
                 # 保存cast 到initilizer
                 for i in node.next_node[0].input:
                     if i.name == node.output[0].name:
-                        i.name = temp.name
-                        i.dims = temp.dims 
-                        i.raw = temp.raw
-                        i.init = temp.init
-                        i.data = temp.data
-                        i.data_type = temp.data_type
+                        # i.name = temp.name
+                        # i.dims = temp.dims 
+                        i.raw = False
+                        i.init = True
+                        i.data = data
+                        i.data_type = w_type
 
                 # 删除constant node
                 graph.node_list.remove(node)
