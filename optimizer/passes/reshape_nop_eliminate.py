@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 from IR import ir
 from optimizer.optimizer import PassCase 
 
-# 删除无效的reshape
+# 删除无效的reshape  输入形状和输出相同
 class reshape_nop_eliminate(PassCase):
     # 判断是否满足条件
     def match_conditions(self, node):

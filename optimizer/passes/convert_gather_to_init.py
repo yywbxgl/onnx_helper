@@ -44,7 +44,10 @@ class convert_gather_to_init(PassCase):
                 #     input_data_1 = input_data_1[0]
 
                 input_data_0 = convert_utils.get_raw_data(node.input[0])
-                input_data_1 = convert_utils.get_raw_data(node.input[1])
+                if len(node.input) <2:
+                    input_data_1 =  convert_utils.get_raw_data(node.weight[0])
+                else:
+                    input_data_1 = convert_utils.get_raw_data(node.input[1])
                 logger.info("input_data: %s", input_data_0)
                 logger.info("input_indeices: %s", input_data_1)
 

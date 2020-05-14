@@ -184,6 +184,7 @@ def test_conveted_model(model_ori, model_opt):
     if 0 in input_shape_ori:
         input_shape_ori = input_shape_opt
 
+    # input_data = np.random.randint(0,255, size=input_shape_ori).astype(np.float32).astype(np.uint8)
     input_data = np.random.randint(0,255, size=input_shape_ori).astype(np.float32)
     logger.info("test model_ori %s", input_data.shape)
     session_1 = backend.prepare(model_ori,  strict=False)
@@ -235,6 +236,39 @@ def change_version(model):
     model.ir_version = 3
     model.opset_import[0].version = 8
     return model
+
+
+# 删除指定名称的node 只能删除单输入输出的node
+def eliminate_one_node(model, name):
+    if type(model) == str:
+        model = onnx.load(model)
+
+    for node in model.graph.node:
+        if node.name == name:
+            logger.warn("----eliminate node %s", node.name)
+            n_input = node.input[0]
+            n_output = node.output[0]
+            # logger.warn("%s  ,%s", n_input,n_output)
+
+            # 如果是最后一个node, 修改上个node的output
+            if n_output == model.graph.output[0].name:
+                for node2 in model.graph.node:
+                    if node2.output[0] == n_input:
+                        logger.warn("---- find prev node: %s", node2.name)
+                        node2.output[0] = n_output
+            else:
+            # 修改下一个node的input
+                for node2 in model.graph.node:
+                    if len(node2.input) != 0 and node2.input[0] == n_output:
+                        logger.warn("---- find next node: %s", node2.name)
+                        node2.input[0] = n_input
+
+            # 删除当前node  ??
+            model.graph.node.remove(node)
+            return model
+
+    return model
+
 
 
     
@@ -298,5 +332,6 @@ if __name__ == "__main__":
         print ("Usage:", sys.argv[0], "onnxModel  outputName")
         sys.exit(-1)
 
-    model = simplify(sys.argv[1], input_shape=[1,224,224,3])
+    # model = simplify(sys.argv[1])
+    model = eliminate_one_node(sys.argv[1], "ArgMax_618")
     onnx.save(model, sys.argv[2])

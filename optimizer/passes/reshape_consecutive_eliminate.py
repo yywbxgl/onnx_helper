@@ -11,9 +11,10 @@ from optimizer.optimizer import PassCase
 class reshape_consecutive_eliminate(PassCase):
     # 判断是否满足条件
     def match_conditions(self, node):
+        # logger.warn("------------------%s  %s  %s", node.name, node.op_type, len(node.next_node) )
         if node.op_type == "Reshape" and len(node.next_node) == 1:
             # 删除连续的reshape
-            if node.next_node[0].op_type == "Reshape" and len(node.next_node[0].next_node) == 1:
+            if node.next_node[0].op_type == "Reshape":
                 return True
         return False
 
@@ -22,7 +23,7 @@ class reshape_consecutive_eliminate(PassCase):
     def run_pass(self, ir_graph):
         for node in ir_graph.node_list:
             if self.match_conditions(node):
-                logger.info("---- eliminate node %s %s", node.op_type, node.output[0].name)
+                logger.warn("---- eliminate node %s %s", node.op_type, node.output[0].name)
                 # 如果不是 last_node,那么需要修改next_node.input
                 if node.output[0].name != ir_graph.output.name:
                     for node2 in node.next_node:
