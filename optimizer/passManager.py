@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 from checker import operator_list
 
 
-class Optimizer():
+class passManager():
 
     def __init__(self):
         # 注册passCase到Manager
@@ -144,6 +144,11 @@ class Optimizer():
 
         return graph
 
+def optimize_graph(graph, pass_list):
+    manager = passManager()
+    ret = manager.optimize_graph(graph, pass_list)
+    return ret
+
 
 class PassCase():
 
@@ -175,7 +180,7 @@ if __name__ == "__main__":
 
     # optimize the grapg
     pass_list = ["eliminate_dropout"]
-    graph = Optimizer().optimize_graph(graph, pass_list)
+    graph = passManager().optimize_graph(graph, pass_list)
   
     # ir_to_pb
     onnx_model = ir_to_pb.convert(graph)

@@ -5,10 +5,8 @@ logger = logging.getLogger(__name__)
 
 from IR import ir
 
-from optimizer.optimizer import PassCase 
 
-
-class squeeze_to_reshape(PassCase):
+class squeeze_to_reshape():
         
     # 判断是否满足条件
     def match_conditions(self, node):

@@ -5,10 +5,8 @@ from IR import ir
 import logging
 logger = logging.getLogger(__name__)
 
-from optimizer.optimizer import PassCase 
 
-
-class globbalMaxPool_to_maxPool(PassCase):
+class globbalMaxPool_to_maxPool():
 
     # 判断是否满足条件
     def match_conditions(self, node):

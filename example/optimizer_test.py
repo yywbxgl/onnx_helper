@@ -19,7 +19,7 @@ from IR import ir_to_pb
 # from optimizer import operator_convert
 from checker import onnx_check
 from simplifyer import onnx_simplifier
-from optimizer.optimizer import Optimizer
+from optimizer import optimize_graph
 
 if __name__ == "__main__":
 
@@ -39,6 +39,7 @@ if __name__ == "__main__":
     onnx.save(onnx_sim, output_file)
     logger.info('save simplified model: %s ...', output_file)
 
+
     # ---- step1. optimize ir graph
     # pb_to_ir
     graph = pb_to_ir.convert(output_file)
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     # ir graph optimize
     # 注意优化顺序！！！
     pass_list = [
+
         "eliminate_dropout",
         "eliminate_identity",
         "eliminate_pad",
@@ -66,22 +68,24 @@ if __name__ == "__main__":
         "fuse_pad_into_maxPool",
         "fuse_pad_into_conv",
 
+        "reshape_consecutive_eliminate",
+        "reshape_nop_eliminate",
+
         "transpose_input",
         "transpose_into_reshape",
         "transpose_into_reducemean",
         "transpose_into_reshape_prenode",
 
-        "reshape_consecutive_eliminate",
-        "reshape_nop_eliminate",
+        "squeeze_to_reshape",
 
         # "transpose_eliminate",   # 这三个慎用
         # "softmax_swap_down",
         # "transpose_swap_down",
     ]
 
-    # pass_list = ["softmax_swap_down"]
+    # pass_list = ["softmax_swap_down", "reshape_consecutive_eliminate"]
 
-    graph = Optimizer().optimize_graph(graph, pass_list)
+    graph = optimize_graph(graph, pass_list)
     # graph.dump()
   
     # pb_to_ir
@@ -89,6 +93,7 @@ if __name__ == "__main__":
     onnx_model = ir_to_pb.convert(graph)
     onnx.save(onnx_model, output_file)
     logger.info('save onnx model %s ...', output_file)
+
 
     # test
     onnx_simplifier.test_conveted_model(onnx_ori, onnx_model)

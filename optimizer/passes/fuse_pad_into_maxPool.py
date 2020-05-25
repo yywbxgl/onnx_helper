@@ -5,10 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase 
 
 
-class fuse_pad_into_maxPool(PassCase):
+class fuse_pad_into_maxPool():
     # 判断是否满足条件
     def match_conditions(self, node):
         if node.op_type == "Pad":

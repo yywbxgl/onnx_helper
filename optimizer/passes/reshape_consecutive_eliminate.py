@@ -5,10 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase 
 
 
-class reshape_consecutive_eliminate(PassCase):
+class reshape_consecutive_eliminate():
     # 判断是否满足条件
     def match_conditions(self, node):
         # logger.warn("------------------%s  %s  %s", node.name, node.op_type, len(node.next_node) )

@@ -5,11 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase
 import numpy as np
 import copy
 
-class softmax_swap_down(PassCase):
+class softmax_swap_down():
 
     def match_conditions(self, node):
         if node.op_type == "Softmax":

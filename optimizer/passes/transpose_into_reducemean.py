@@ -5,10 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase
 import numpy as np
 
-class transpose_into_reducemean(PassCase):
+class transpose_into_reducemean():
 
     def match_conditions(self, node):
         if node.op_type == "Transpose" and len(node.next_node) == 1 and node.next_node[0].op_type == "ReduceMean":

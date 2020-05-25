@@ -5,10 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase
 import numpy as np
 
-class transpose_input(PassCase):
+class transpose_input():
     def match_conditions(self, node, input_name):
         # input 接一个tranpose的情况  修改input
         if node.op_type == "Transpose" and node.input[0].name == input_name:

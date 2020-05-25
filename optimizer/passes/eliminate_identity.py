@@ -5,11 +5,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase 
 import copy
 
 
-class eliminate_identity(PassCase):
+class eliminate_identity():
     # 判断是否满足条件
     def match_conditions(self, node):
         if node.op_type == "Identity":

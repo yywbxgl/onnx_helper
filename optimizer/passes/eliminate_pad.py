@@ -5,10 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase 
 
 
-class eliminate_pad(PassCase):
+class eliminate_pad():
     # 判断是否满足条件
     def match_conditions(self, node):
         if node.op_type == "Pad":

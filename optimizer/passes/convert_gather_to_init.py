@@ -8,10 +8,8 @@ logger = logging.getLogger(__name__)
 from IR import ir
 from IR import convert_utils
 
-from optimizer.optimizer import PassCase 
 
-
-class convert_gather_to_init(PassCase):
+class convert_gather_to_init():
 
     # 判断是否满足条件
     def match_conditions(self, node):

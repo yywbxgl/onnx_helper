@@ -8,10 +8,8 @@ from IR import convert_utils
 import logging
 logger = logging.getLogger(__name__)
 
-from optimizer.optimizer import PassCase 
 
-
-class convert_concat_to_init(PassCase):
+class convert_concat_to_init():
 
     # 判断是否满足条件
     def match_conditions(self, node):

@@ -5,10 +5,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from IR import ir
-from optimizer.optimizer import PassCase
 import numpy as np
 
-class transpose_eliminate(PassCase):
+class transpose_eliminate():
 
     def match_conditions(self, node):                
         return False

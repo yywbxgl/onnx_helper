@@ -8,10 +8,8 @@ import copy
 import logging
 logger = logging.getLogger(__name__)
 
-from optimizer.optimizer import PassCase 
 
-
-class cast_to_init(PassCase):
+class cast_to_init():
         
     def match_conditions(self, node):
         if node.op_type == "Cast":
