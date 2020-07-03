@@ -9,42 +9,6 @@ logger = logging.getLogger(__name__)
 from checker import operator_list
 from IR import pb_to_ir
 
-def ir_dot(ir_graph):
-    g = Digraph('G', filename='test', format='png')
-    g.attr(rankdir='TB')
-    g.attr('node', shape='box')
-    for node in ir_graph.node_list:
-        for node2 in node.next_node:
-            g.edge(node.name, node2.name)
-    g.view()
-
-
-def ir_dot2(ir_graph):
-    g = Digraph('G', filename='test2', format='png')
-    g.attr(rankdir='TB')
-    g.attr('node', shape='box', color="red", style='filled')
-    for node in ir_graph.node_list:
-        for i in node.input:
-            if i.name == ir_graph.input.name:
-                g.edge("Input", node.name, label=str(ir_graph.input.dims))
-        for i in node.output:
-            if i.name == ir_graph.output.name:
-                g.edge(node.name, "Output", label=str(ir_graph.output.dims))
-        for node2 in node.next_node:
-            for out in node.output:
-                if out in node2.input:
-                    g.edge(node.name, node2.name, label=str(out.dims))
-        if node.op_type in operator_list.skym_operator_list:
-            g.node(node.name, color="green", style='filled')
-        if node.op_type in operator_list.nbdla_operator_list:
-            g.node(node.name, color="yellow", style='filled')
-    g.node("Input", color="green", style='filled')
-    g.node("Output", color="green", style='filled')
-
-    # g.save()
-    g.view()
-
-
 def ir_op_check(ir_graph):
 
     ret = True
@@ -55,10 +19,12 @@ def ir_op_check(ir_graph):
     for node in ir_graph.node_list:
         for i in node.input:
             if i.name == ir_graph.input.name:
-                g.edge("Input", node.name, label=str(ir_graph.input.dims))
+                g.edge(i.name, node.name, label=str(ir_graph.input.dims))
         for i in node.output:
-            if i.name == ir_graph.output.name:
-                g.edge(node.name, "Output", label=str(ir_graph.output.dims))
+            if i.name in [t.name for t in ir_graph.output] :
+                for t in ir_graph.output:
+                    if t.name == i.name:
+                        g.edge(node.name, t.name, label=str(t.dims))
         for node2 in node.next_node:
             for out in node.output:
                 if out in node2.input:
@@ -90,8 +56,7 @@ if __name__ == "__main__":
     graph = pb_to_ir.convert(sys.argv[1])
     graph.dump()
 
-    # ir_dot(graph)
-    ir_dot2(graph)
+    ir_op_check(graph)
 
 
 

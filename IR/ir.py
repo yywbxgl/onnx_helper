@@ -30,7 +30,7 @@ class Graph:
         self.name = ""          # graph 的名称
         self.node_list = []     # graph 的网络结构, type:Node
         self.input = Value()    # graph 的输入层信息，type:value  只支持一个input
-        self.output = Value()   # graph 的输出层信息，type:value  只支持一个output
+        self.output = []        # graph 的输出层信息，type:value  支持多个output
         self.ir_version = 0
         self.opset = 0
         # self.init_dict = {}          # 存放weight数据
@@ -39,7 +39,8 @@ class Graph:
     def dump(self):
         logger.debug("-------- ir_grapg dump --------------")
         logger.debug("graph_input  = %s %s", self.input.name,  self.input.dims)
-        logger.debug("graph_output = %s %s", self.output.name,  self.output.dims)
+        for i in self.output:
+            logger.debug("graph_output = %s %s", i.name,  i.dims)
 
         node_str = "\n"
         for i in self.node_list:

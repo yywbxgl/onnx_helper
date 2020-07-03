@@ -10,8 +10,8 @@ import coloredlogs
 fmt = "[%(levelname)-5s] [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s"
 fmt = "[%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
 # fmt = "%(filename)s:%(lineno)d %(levelname)s - %(message)s"
-# coloredlogs.install(level="DEBUG", fmt=fmt)
-coloredlogs.install(level="INFO", fmt=fmt)
+coloredlogs.install(level="DEBUG", fmt=fmt)
+# coloredlogs.install(level="INFO", fmt=fmt)
 logger = logging.getLogger(__name__)
 
 from IR import pb_to_ir
@@ -52,6 +52,7 @@ if __name__ == "__main__":
         "eliminate_dropout",
         "eliminate_identity",
         "eliminate_pad",
+
 
         "convert_constant_to_init",  # 这五个顺序注意
         "convert_shape_to_init",  

@@ -45,9 +45,9 @@ class cast_to_init():
 
                 # 保存的int不使用raw_data
                 if len(node.weight) != 0:
-                    data = convert_utils.get_raw_data(node.weight[0])
+                    data = int(convert_utils.get_raw_data(node.weight[0]))
                 else:
-                    data = convert_utils.get_raw_data(node.input[0])
+                    data = int(convert_utils.get_raw_data(node.input[0]))
 
                 # 保存cast 到initilizer
                 for i in node.next_node[0].input:

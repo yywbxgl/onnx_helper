@@ -18,6 +18,11 @@ class convert_gather_to_init():
             for i in node.input:
                 if i.init == False:
                     return False
+
+            for i in node.weight:
+                if i.init == False:
+                    return False
+
             return True
 
         return False
@@ -42,6 +47,7 @@ class convert_gather_to_init():
                 #     input_data_1 = input_data_1[0]
 
                 input_data_0 = convert_utils.get_raw_data(node.input[0])
+
                 if len(node.input) <2:
                     input_data_1 =  convert_utils.get_raw_data(node.weight[0])
                 else:
@@ -55,7 +61,7 @@ class convert_gather_to_init():
                         axis_arg = int(i.data[0])
 
                 data = np.array(input_data_0)
-                indices = np.array(input_data_1)
+                indices = np.array(input_data_1).astype(np.int64)
                 y = np.take(data, indices, axis=axis_arg)
                 logger.info("gather output: %s", y)
 

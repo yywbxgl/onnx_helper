@@ -18,6 +18,10 @@ class convert_unsuqeeze_to_init():
             for i in node.input:
                 if i.init == False:
                     return False
+
+            for i in node.weight:
+                if i.init == False:
+                    return False
             return True
 
         return False
@@ -27,8 +31,11 @@ class convert_unsuqeeze_to_init():
         for node in graph.node_list:
             if self.match_conditions(node) == True:
                 logger.info("---- convert unsqueeze to initiliazer. %s", node.output[0].name)
-                input_data = convert_utils.get_raw_data(node.input[0])
-                logger.info("input_data: %s", node.input[0].data)
+                if len(node.input) != 0 :
+                    input_data = convert_utils.get_raw_data(node.input[0])
+                else:
+                    input_data = convert_utils.get_raw_data(node.weight[0])
+                logger.info("input_data: %s", input_data)
                 
                 axis_arg = 0
                 for i in node.attribute:
@@ -40,7 +47,7 @@ class convert_unsuqeeze_to_init():
                 for i in axis_arg:
                     y = np.expand_dims(y, axis=i)
 
-                logger.info("unsqueze output : %s", y)
+                logger.info("unsqueze output : %s  shape:%s", y, y.shape)
 
                 # 保存结果到 到initilizer
                 for i in node.next_node[0].input:
@@ -49,7 +56,10 @@ class convert_unsuqeeze_to_init():
                         i.data = y.tolist()
                         if type(i.data) != type([]):
                             i.data = [i.data]
-                        i.data_type = node.input[0].data_type
+                        if len( node.input) != 0:
+                            i.data_type = node.input[0].data_type
+                        else:
+                            i.data_type = node.weight[0].data_type
                         i.init = True
 
                 node.next_node[0].pre_node = []

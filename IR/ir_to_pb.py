@@ -5,6 +5,7 @@ from onnx import helper, shape_inference
 from onnx import AttributeProto, TensorProto, GraphProto
 import onnx
 import logging
+import numpy as np
 logger = logging.getLogger(__name__)
 
 from IR import ir 
@@ -21,7 +22,7 @@ def irValue_to_protoValueInfo(ir_value):
 
 def irValue_to_protoTensor(ir_value):
 
-    if (ir_value.raw == True):
+    if ir_value.raw == True:
         out = helper.make_tensor(
             name = ir_value.name,
             data_type = ir_value.data_type,
@@ -30,11 +31,12 @@ def irValue_to_protoTensor(ir_value):
             raw = True 
         )   
     else:
+        data = np.array(ir_value.data).flatten()
         out = helper.make_tensor(
             name = ir_value.name,
             data_type = ir_value.data_type,
             dims = ir_value.dims,
-            vals = ir_value.data,
+            vals = data,
         )
 
     return out
@@ -45,10 +47,8 @@ def convert(ir_graph):
     logger.info("convert ir to pb ...")
 
     # ------ make input and output  -----------
-    output_data = irValue_to_protoValueInfo(ir_graph.output)
     inputs = [irValue_to_protoValueInfo(ir_graph.input)]
     logger.debug("inputs: %s", [i.name for i in inputs])
-    logger.debug("outputs: %s", output_data.name)
     for node in ir_graph.node_list:
         for i in node.weight:
             if i.name not in [t.name for t in inputs]:
@@ -59,8 +59,13 @@ def convert(ir_graph):
                 if i.name not in [t.name for t in inputs]:
                     temp = irValue_to_protoValueInfo (i)
                     inputs.append(temp)
-
     logger.debug("inputs: %s", [i.name for i in inputs])
+
+    output_data = []
+    for i in ir_graph.output:
+        temp = irValue_to_protoValueInfo(i)
+        output_data.append(temp)
+        logger.debug("outputs: %s", i.name)
 
     # ------ make initializers -----------
     initializers = []
@@ -111,7 +116,7 @@ def convert(ir_graph):
         name = ir_graph.name,
         nodes = nodes,
         inputs = inputs,
-        outputs = [output_data],
+        outputs = output_data,
         initializer = initializers,
     )
     # print(graph_def)

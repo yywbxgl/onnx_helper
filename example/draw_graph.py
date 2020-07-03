@@ -24,10 +24,14 @@ def ir_dot2(ir_graph):
     for node in ir_graph.node_list:
         for i in node.input:
             if i.name == ir_graph.input.name:
-                g.edge("Input", node.name, label=str(ir_graph.input.dims))
+                g.edge(i.name, node.name, label=str(ir_graph.input.dims))
+                g.node(i.name, color="green", style='filled')
         for i in node.output:
-            if i.name == ir_graph.output.name:
-                g.edge(node.name, "Output", label=str(ir_graph.output.dims))
+            if i.name in [t.name for t in ir_graph.output] :
+                for t in ir_graph.output:
+                    if t.name == i.name:
+                        g.edge(node.name, t.name, label=str(t.dims))
+                        g.node(t.name, color="green", style='filled')
         for node2 in node.next_node:
             for out in node.output:
                 if out in node2.input:
@@ -36,8 +40,6 @@ def ir_dot2(ir_graph):
             g.node(node.name, color="green", style='filled')
         if node.op_type in operator_list.nbdla_operator_list:
             g.node(node.name, color="yellow", style='filled')
-    g.node("Input", color="green", style='filled')
-    g.node("Output", color="green", style='filled')
 
     # g.save()
     g.view()

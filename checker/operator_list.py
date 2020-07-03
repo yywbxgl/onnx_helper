@@ -16,6 +16,7 @@ skym_operator_list = [
 "Unsqueeze",
 # "Transpose",
 "Clip",
+"PRelu",
 ]
 
 nbdla_operator_list = [

@@ -104,7 +104,7 @@ def convert(onnx_model_file):
     ir_graph = ir.Graph()
     if (proto_graph.name != ""):
         ir_graph.name = proto_graph.name 
-        logger.debug("graph name: %s", ir_graph.name)
+        logger.info("graph name: %s", ir_graph.name)
     ir_graph.ir_version = ModelProto.ir_version
     ir_graph.opset = ModelProto.opset_import[0].version
    
@@ -118,18 +118,17 @@ def convert(onnx_model_file):
     for i in proto_graph.input:
         if i.name not in init_list:
             ir_graph.input = protoValueInfo_to_irValue(i)    
-    logger.debug("input: %s %s", ir_graph.input.name , str(ir_graph.input.dims))
+    logger.info("input: %s %s", ir_graph.input.name , str(ir_graph.input.dims))
 
     for dim in ir_graph.input.dims:
         if dim == 0:
             logger.error("!!! can not parse dynamic input.")
             sys.exit(-1)
 
-    if len(proto_graph.output) > 1:
-        logger.error("!!! can not parse multi output.")
-        sys.exit(-1)
-    ir_graph.output = protoValueInfo_to_irValue(proto_graph.output[0])
-    logger.debug("output: %s %s", ir_graph.output.name,  ir_graph.output.dims)
+    for i in proto_graph.output:
+        temp = protoValueInfo_to_irValue(i)
+        ir_graph.output.append(temp)
+        logger.info("output: %s %s", temp.name,  temp.dims)
 
     # ----- 添加 init_list -----
     logger.debug("----------------------")
@@ -148,7 +147,7 @@ def convert(onnx_model_file):
     mid_feature_dict = {}
     for proto_node in proto_graph.node:
         for output in proto_node.output:
-            if output != ir_graph.output.name:
+            if output not in [i.name for i in ir_graph.output]:
                 feature_map = ir.Value()
                 feature_map.name = output
                 mid_feature_dict[feature_map.name] = feature_map
@@ -181,8 +180,10 @@ def convert(onnx_model_file):
         for i in proto_node.output:
             if i in mid_feature_dict:
                 ir_node.output.append(mid_feature_dict[i])
-            elif i == ir_graph.output.name:
-                ir_node.output.append(ir_graph.output)
+            elif i in [i.name for i in ir_graph.output]:
+                for t in ir_graph.output:
+                    if i == t.name:
+                        ir_node.output.append(t)
             else:
                  logger.warn("output %s not find", i)
 

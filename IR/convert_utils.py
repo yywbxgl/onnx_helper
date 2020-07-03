@@ -73,7 +73,8 @@ def get_raw_data(value_data):
     
     # 转换标量
     if  value_data.dims == []:
-        ret = ret[0]
+        if type(ret) == type([]):
+            ret = ret[0]
 
     return ret
 

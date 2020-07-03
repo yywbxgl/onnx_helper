@@ -202,7 +202,12 @@ def test_conveted_model(model_ori, model_opt):
     output_2 = session_2.run(input_data)
     logger.debug("model_opt finish")
 
-    np.testing.assert_allclose(output_1, output_2, rtol=1e-3, atol=1e-4)
+    if (len(output_1) != len(output_2)):
+        logger.error("output shape not equal.")
+
+    # 有多个output时候， 分别对比output
+    for i in range(len(output_1)):
+        np.testing.assert_allclose(output_1[i], output_2[i], rtol=1e-3, atol=1e-4)
     logger.info("test pass")
 
 
@@ -270,6 +275,38 @@ def eliminate_one_node(model, name):
     return model
 
 
+def concat_output(model):
+    if type(model) == str:
+        model = onnx.load(model)
+
+    # add concat node
+    new_node = onnx.NodeProto()
+    new_node.name = "concat_outputs"
+    new_node.op_type = "Concat"
+    new_attribute = onnx.AttributeProto()
+    new_attribute.name = "axis"
+    new_attribute.type = 2
+    new_attribute.i = 1
+    new_node.attribute.append(new_attribute)
+    new_node.output.append("concat_outputs_ret")
+    for i in model.graph.output:
+        new_node.input.append(i.name)
+    model.graph.node.append(new_node)
+
+    print("------------")
+
+    # modify grapg input
+    # for i in  model.graph.output:
+    #     model.graph.input.append(i)
+
+    # modify grapg output
+    while(len( model.graph.output) > 1):
+        model.graph.output.pop()
+    model.graph.output[0].name = "concat_outputs_ret"
+    model.graph.output[0].type.tensor_type.shape.dim[0].dim_value = 1
+    model.graph.output[0].type.tensor_type.shape.dim[1].dim_value = 15
+
+    return model
 
     
 def simplify(model, input_shape=None):
@@ -333,5 +370,6 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     # model = simplify(sys.argv[1])
-    model = eliminate_one_node(sys.argv[1], "ArgMax_618")
+    # model = eliminate_one_node(sys.argv[1], "Sigmoid_15")
+    model = concat_output(sys.argv[1])
     onnx.save(model, sys.argv[2])
