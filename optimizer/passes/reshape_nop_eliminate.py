@@ -11,7 +11,7 @@ class reshape_nop_eliminate():
     # 判断是否满足条件
     def match_conditions(self, node):
         if node.op_type == "Reshape":
-            if len(node.input[0].dims) != 0 and  len(node.output[0].dims) != 0 :
+            if len(node.input[0].dims) != 0 and len(node.output[0].dims) != 0 :
                 if node.input[0].dims == node.output[0].dims:
                     return True
             else:
@@ -26,7 +26,7 @@ class reshape_nop_eliminate():
             if self.match_conditions(node):
                 logger.info("---- eliminate node %s %s", node.op_type, node.output[0].name)
                 # 如果不是 last_node,那么需要修改next_node.input
-                if node.output[0].name != ir_graph.output.name:
+                if node.output[0].name not in [i.name for i in ir_graph.output]:
                     for node2 in node.next_node:
                         node2.input = node.input
                 else:

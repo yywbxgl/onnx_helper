@@ -10,8 +10,8 @@ import coloredlogs
 fmt = "[%(levelname)-5s] [%(asctime)s] [%(filename)s:%(lineno)d] %(message)s"
 fmt = "[%(levelname)s] [%(filename)s:%(lineno)d] %(message)s"
 # fmt = "%(filename)s:%(lineno)d %(levelname)s - %(message)s"
-coloredlogs.install(level="DEBUG", fmt=fmt)
-# coloredlogs.install(level="INFO", fmt=fmt)
+# coloredlogs.install(level="DEBUG", fmt=fmt)
+coloredlogs.install(level="INFO", fmt=fmt)
 logger = logging.getLogger(__name__)
 
 from IR import pb_to_ir
@@ -70,7 +70,7 @@ if __name__ == "__main__":
         "fuse_pad_into_conv",
 
         "reshape_consecutive_eliminate",
-        "reshape_nop_eliminate",
+        # "reshape_nop_eliminate",
 
         "transpose_input",
         "transpose_into_reshape",
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     onnx.save(onnx_model, file_name)
     onnx_simplifier.test_conveted_model(onnx_ori, file_name)
 
-    complier = "../tools/ys11_bin_onnc.nv_large  "
+    complier = "../tools/ys13_bin_onnc.nv_large  "
     cmd = complier + file_name + "  -o " + loadable_name
     ret = os.system(cmd)
     if ret != 256:

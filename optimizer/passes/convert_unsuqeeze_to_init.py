@@ -35,19 +35,19 @@ class convert_unsuqeeze_to_init():
                     input_data = convert_utils.get_raw_data(node.input[0])
                 else:
                     input_data = convert_utils.get_raw_data(node.weight[0])
-                logger.info("input_data: %s", input_data)
+                # logger.info("input_data: %s", input_data)
                 
                 axis_arg = 0
                 for i in node.attribute:
                     if i.name == "axes":
                         axis_arg = i.data
-                logger.info("axes=%s", axis_arg)
+                logger.debug("axes=%s", axis_arg)
 
                 y = np.array(input_data)
                 for i in axis_arg:
                     y = np.expand_dims(y, axis=i)
 
-                logger.info("unsqueze output : %s  shape:%s", y, y.shape)
+                # logger.info("unsqueze output : %s  shape:%s", y, y.shape)
 
                 # 保存结果到 到initilizer
                 for i in node.next_node[0].input:

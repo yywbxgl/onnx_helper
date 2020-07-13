@@ -25,7 +25,7 @@ class eliminate_dropout():
             if self.match_conditions(node):
                 logger.info("---- eliminate node %s %s", node.op_type, node.output[0].name)
                 # 如果不是 last_node,那么需要修改next_node.input
-                if node.output[0].name != ir_graph.output.name:
+                if node.output[0].name not in [i.name for i in ir_graph.output]:
                     for node2 in node.next_node:
                         for i in node2.input:
                             if i.name == node.output[0].name:
