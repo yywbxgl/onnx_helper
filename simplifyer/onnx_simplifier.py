@@ -88,7 +88,7 @@ def convert_auto_pad(model):
                                 kernal_shape = attr2.ints 
                             elif attr2.name == "strides":
                                 stride = attr2.ints    
-                        logger.info("convert_auto_pad: %s,  kernal_shape: %s, stride:%s",  attr.s, kernal_shape, stride)
+                        logger.info("convert_auto_pad: %s  %s,  kernal_shape: %s, stride:%s", node.name, attr.s, kernal_shape, stride)
                         
                         if kernal_shape == None or stride == None:
                             logger.warn("can not find kernal_shape and stride.")
@@ -106,16 +106,22 @@ def convert_auto_pad(model):
                         for o in model.graph.value_info:
                             if o.name == node.input[0]:
                                 input_shape = [t.dim_value for t in o.type.tensor_type.shape.dim]
-                                logger.debug("get input shape %s", input_shape)
+                                logger.info("get input shape %s", input_shape)
                             if o.name == node.output[0]:
                                 output_shape = [t.dim_value for t in o.type.tensor_type.shape.dim]
-                                logger.debug("get output shape %s", output_shape)
+                                logger.info("get output shape %s", output_shape)
+
+                        # conv 未网络最后一层时， shape 从 graph.output 取
+                        if len(output_shape) == 0:
+                            for o in model.graph.output:
+                                if o.name == node.output[0]:
+                                    output_shape = [t.dim_value for t in o.type.tensor_type.shape.dim]
+                                    logger.info("get output shape %s", output_shape)
                         
                         if len(input_shape) == 0:
                             logger.warn("can not get input shape.")
                             break
 
-                        
                         input_h = input_shape[2]
                         input_w = input_shape[3]
                         output_h = output_shape[2]

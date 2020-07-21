@@ -82,6 +82,7 @@ if __name__ == "__main__":
         # "transpose_eliminate",   # 这三个慎用
         # "softmax_swap_down",
         # "transpose_swap_down",
+        "leakRelu_to_PRelu",
     ]
 
     # pass_list = ["softmax_swap_down", "reshape_consecutive_eliminate"]

@@ -38,6 +38,7 @@ class passManager():
         from optimizer.passes.reshape_nop_eliminate import reshape_nop_eliminate
         from optimizer.passes.softmax_swap_down import softmax_swap_down
         from optimizer.passes.squeeze_to_reshape import squeeze_to_reshape
+        from optimizer.passes.leakRelu_to_PRelu  import leakRelu_to_PRelu
 
         self.passes_manager= {}
         
@@ -70,6 +71,7 @@ class passManager():
         self.passes_manager["reshape_nop_eliminate"] = reshape_nop_eliminate()
         self.passes_manager["softmax_swap_down"] = softmax_swap_down()  # warn
         self.passes_manager["squeeze_to_reshape"] = squeeze_to_reshape()
+        self.passes_manager["leakRelu_to_PRelu"] = leakRelu_to_PRelu()
 
 
     # 获取当前支持的optimize选项
