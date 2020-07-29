@@ -39,6 +39,9 @@ class passManager():
         from optimizer.passes.softmax_swap_down import softmax_swap_down
         from optimizer.passes.squeeze_to_reshape import squeeze_to_reshape
         from optimizer.passes.leakRelu_to_PRelu  import leakRelu_to_PRelu
+        from optimizer.passes.transpose_to_init  import transpose_to_init
+        from optimizer.passes.unsqueeze_to_reshape  import unsqueeze_to_reshape
+        from optimizer.passes.matmul_to_gemm  import matmul_to_gemm
 
         self.passes_manager= {}
         
@@ -72,7 +75,11 @@ class passManager():
         self.passes_manager["softmax_swap_down"] = softmax_swap_down()  # warn
         self.passes_manager["squeeze_to_reshape"] = squeeze_to_reshape()
         self.passes_manager["leakRelu_to_PRelu"] = leakRelu_to_PRelu()
+        self.passes_manager["transpose_to_init"] = transpose_to_init()
+        self.passes_manager["unsqueeze_to_reshape"] = unsqueeze_to_reshape()
+        self.passes_manager["matmul_to_gemm"] = matmul_to_gemm()
 
+        
 
     # 获取当前支持的optimize选项
     def get_all_optimize(self):

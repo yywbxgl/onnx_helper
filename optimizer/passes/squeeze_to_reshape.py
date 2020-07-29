@@ -20,7 +20,7 @@ class squeeze_to_reshape():
             for attr in node.attribute:
                 if attr.name == "axes":
                     for i in attr.data:
-                        if node.input[0].dims[i] != 1:  # 只有一个输入
+                        if node.input[0].dims[i] != 1:  # 只能对shape[index] =1 的维度进行压缩
                             logger.warn("can not remove shape %s, axes %s",  i.dims, i.data)
                             return False
             return True

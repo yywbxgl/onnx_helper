@@ -61,11 +61,11 @@ def update_input_output_shape(model, input_shape):
                 dims.dim_value = 1
 
 	# 修改output  0->1
-    for t in model.graph.output:
-        for dims in  t.type.tensor_type.shape.dim:
-            if dims.dim_value == 0:
-                logger.warn("change output shape")
-                dims.dim_value = 1
+    # for t in model.graph.output:
+    #     for dims in  t.type.tensor_type.shape.dim:
+    #         if dims.dim_value == 0:
+    #             logger.warn("change output shape")
+    #             dims.dim_value = 1
 
     return model
 
@@ -274,9 +274,16 @@ def eliminate_one_node(model, name):
                         logger.warn("---- find next node: %s", node2.name)
                         node2.input[0] = n_input
 
-            # 删除当前node  ??
+            # 删除value info
+            for value in model.graph.value_info:
+                if value.name == n_input:
+                    logger.warn("----eliminate value_info %s",value.name)
+                    model.graph.value_info.remove(value)
+
+            # 删除当前node  
             model.graph.node.remove(node)
-            return model
+            # return model
+    
 
     return model
 
@@ -332,7 +339,7 @@ def simplify(model, input_shape=None):
     # optimize
     passes = [
     "eliminate_deadend", 
-    # "eliminate_identity", 
+    "eliminate_identity", 
     # "eliminate_nop_dropout",
     # "eliminate_nop_monotone_argmax",
     # "eliminate_nop_pad",
@@ -361,7 +368,7 @@ def simplify(model, input_shape=None):
     onnx_model = onnx.shape_inference.infer_shapes(onnx_model)
     onnx.checker.check_model(onnx_model)
 
-    # onnx_model = change_version(onnx_model)
+    onnx_model = change_version(onnx_model)
 
     # test converted model
     test_conveted_model(model_ori, onnx_model)
@@ -375,7 +382,10 @@ if __name__ == "__main__":
         print ("Usage:", sys.argv[0], "onnxModel  outputName")
         sys.exit(-1)
 
-    # model = simplify(sys.argv[1])
-    # model = eliminate_one_node(sys.argv[1], "Sigmoid_15")
-    model = concat_output(sys.argv[1])
-    onnx.save(model, sys.argv[2])
+    # onnx_model = simplify(sys.argv[1])
+    # onnx_model = eliminate_one_node(sys.argv[1], "Sigmoid_12")
+    onnx_model = concat_output(sys.argv[1])
+    
+    onnx_model = onnx.shape_inference.infer_shapes(onnx_model)
+    onnx.checker.check_model(onnx_model)
+    onnx.save(onnx_model, sys.argv[2])

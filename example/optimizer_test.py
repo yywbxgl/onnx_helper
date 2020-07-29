@@ -34,6 +34,7 @@ if __name__ == "__main__":
 
     # ---- step0. simplify onnx model
     # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
+    # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,3,12,12])
     onnx_sim = onnx_simplifier.simplify(input_file)
     # onnx_sim = onnx_simplifier.change_version(onnx_sim)
     onnx.save(onnx_sim, output_file)
@@ -60,6 +61,7 @@ if __name__ == "__main__":
         "convert_unsuqeeze_to_init",
         "convert_concat_to_init",
         "cast_to_init",
+        "transpose_to_init",
 
         "convert_flatten_to_reshape",
         "convert_reduceMean_to_globalAveragePool",
@@ -72,17 +74,20 @@ if __name__ == "__main__":
         "reshape_consecutive_eliminate",
         # "reshape_nop_eliminate",
 
-        "transpose_input",
-        "transpose_into_reshape",
-        "transpose_into_reducemean",
-        "transpose_into_reshape_prenode",
+        # "transpose_input",
+        # "transpose_into_reshape",
+        # "transpose_into_reducemean",
+        # "transpose_into_reshape_prenode",
 
         "squeeze_to_reshape",
+        "unsqueeze_to_reshape",
 
         # "transpose_eliminate",   # 这三个慎用
         # "softmax_swap_down",
         # "transpose_swap_down",
         "leakRelu_to_PRelu",
+
+        "matmul_to_gemm",
     ]
 
     # pass_list = ["softmax_swap_down", "reshape_consecutive_eliminate"]
