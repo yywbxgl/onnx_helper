@@ -12,8 +12,20 @@ def exportConfig(ir_graph):
     split_str = " ; "
 
     config = "graph : " + ir_graph.name + "\n"
-    config += "input : " + ir_graph.input.name + split_str + str(ir_graph.input.dims) + "\n"
-    config += "output : " + ir_graph.output.name + split_str + str(ir_graph.output.dims) + "\n"
+    for i in ir_graph.input:
+        if i.data_type == ir.DataType.FLOAT.value:
+            config += "input : " + i.name + split_str + str(i.dims) + "\n"
+        else:
+            config += "input : " + i.name + split_str + str(i.dims) + split_str +  ir.DataType(i.data_type).name +"\n"
+
+    for i in ir_graph.output:
+        if i.data_type == ir.DataType.FLOAT.value:
+            config += "output : " + i.name + split_str + str(i.dims) + "\n"
+        else:
+            config += "output : " + i.name + split_str + str(i.dims) + split_str +  ir.DataType(i.data_type).name + "\n"
+
+    config += "ir_version : " + str(ir_graph.ir_version) +  "\n"
+    config += "opset : " + str(ir_graph.opset) +  "\n"
 
     for i in ir_graph.node_list:
         config += "{\n"

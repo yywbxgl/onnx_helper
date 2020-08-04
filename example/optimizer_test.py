@@ -43,6 +43,7 @@ if __name__ == "__main__":
 
     # ---- step1. optimize ir graph
     # pb_to_ir
+    # graph = pb_to_ir.convert(input_file)
     graph = pb_to_ir.convert(output_file)
     graph.dump()
 
@@ -62,6 +63,7 @@ if __name__ == "__main__":
         "convert_concat_to_init",
         "cast_to_init",
         "transpose_to_init",
+        "convert_constantOfShape_to_init",
 
         "convert_flatten_to_reshape",
         "convert_reduceMean_to_globalAveragePool",
@@ -111,6 +113,7 @@ if __name__ == "__main__":
         logger.warn("onnx operator check not pass!")
     else:
         logger.info("check pass")
+
 
     # -----setp 5 compile onnx_model, save loadable
     logger.info("change version to 3/8")

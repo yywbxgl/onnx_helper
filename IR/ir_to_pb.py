@@ -47,8 +47,12 @@ def convert(ir_graph):
     logger.info("convert ir to pb ...")
 
     # ------ make input and output  -----------
-    inputs = [irValue_to_protoValueInfo(ir_graph.input)]
-    logger.debug("inputs: %s", [i.name for i in inputs])
+    inputs = []
+    for i in ir_graph.input:
+        temp = irValue_to_protoValueInfo(i)
+        inputs.append(temp)
+        logger.debug("inputs: %s", i.name)
+
     for node in ir_graph.node_list:
         for i in node.weight:
             if i.name not in [t.name for t in inputs]:
@@ -120,10 +124,6 @@ def convert(ir_graph):
         initializer = initializers,
     )
     # print(graph_def)
-
-    # print("-------------------------")
-    # print(onnx.helper.printable_graph(graph_def))
-    # print("-------------------------")
 
     # Create the model (ModelProto)
     if ir_graph.opset !=0 and ir_graph.ir_version !=0:

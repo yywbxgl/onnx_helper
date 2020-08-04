@@ -36,7 +36,7 @@ def convert_raw_data(value_data):
         # print(new_data)
         value_data.data = new_data
         value_data.raw = False
-        logger.debug("convert raw data success.")
+        # logger.warn("convert raw data success. %s  %s", value_data.data, value_data.data_type)
 
     return value_data
 

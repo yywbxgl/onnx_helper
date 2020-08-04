@@ -37,8 +37,8 @@ class unsqueeze_to_reshape():
                 output_shape = input_shape
                 for i in axis:
                     output_shape.insert(i, 1)   
-                # print(output_shape)
                 # output_shape = [1,512,1,1]  # test
+                logger.info("convert to reshape %s", output_shape)
 
                 # 替换Unsqueeze node
                 new_weight = ir.Value()

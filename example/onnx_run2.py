@@ -22,11 +22,12 @@ model = onnx.load(sys.argv[1])
 session = backend.prepare(model)
 onnx.checker.check_model(model)
 
-x = np.random.randn(1, 3, 48, 48).astype(np.float32) 
+x = np.random.randn(1, 3, 1200, 1200).astype(np.float32) 
 output = session.run(x)
+print("input_shape:", x.shape)
 
 for i in output:
-    print(np.array(i).shape)
+    print("output_shape:", np.array(i).shape)
 
 print(output)
 

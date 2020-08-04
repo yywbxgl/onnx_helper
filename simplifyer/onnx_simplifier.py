@@ -214,6 +214,7 @@ def test_conveted_model(model_ori, model_opt):
     # 有多个output时候， 分别对比output
     for i in range(len(output_1)):
         np.testing.assert_allclose(output_1[i], output_2[i], rtol=1e-3, atol=1e-4)
+        # np.testing.assert_almost_equal(output_1[i], output_2[i])
     logger.info("test pass")
 
 
@@ -368,7 +369,7 @@ def simplify(model, input_shape=None):
     onnx_model = onnx.shape_inference.infer_shapes(onnx_model)
     onnx.checker.check_model(onnx_model)
 
-    onnx_model = change_version(onnx_model)
+    # onnx_model = change_version(onnx_model)
 
     # test converted model
     test_conveted_model(model_ori, onnx_model)

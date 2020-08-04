@@ -15,7 +15,12 @@ def parse_to_ir_value(line):
     dims = contents[1].strip()  # 用","分割一次，第二个值为dims
     out.name = name
     out.dims = eval(dims)
-    out.data_type = 1 # todo  输入只支持float 类型
+    out.data_type = ir.DataType.FLOAT.value   # 默认为FLOAT
+
+    if len(contents) > 2:
+        tmp = ir.DataType[contents[2].strip()].value
+        out.data_type = tmp
+
     return out
 
 
@@ -140,12 +145,17 @@ def importConfig(confg_file):
     remove_invaild_line(lines)
     for line in lines:
         key = line.split(":",1)[0].strip()
+        value = line.split(":",1)[1].strip()
         if "input" in key:
-            out_graph.input = parse_to_ir_value(line)
+            out_graph.input.append(parse_to_ir_value(line))
         elif "output" in key:
-            out_graph.output = parse_to_ir_value(line)
+            out_graph.output.append(parse_to_ir_value(line))  
         elif "graph" in key:
-            out_graph.name = line.split(":",1)[1].strip()
+            out_graph.name = value
+        elif "ir_version" in key:
+            out_graph.ir_version = int(value)
+        elif "opset" in key:
+            out_graph.opset = int(value)
         else:
             print("config error.", line)
     content.pop(0)

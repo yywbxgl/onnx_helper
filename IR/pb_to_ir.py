@@ -112,23 +112,22 @@ def convert(onnx_model_file):
     # ----- 添加ir_input, ir_output -------
     init_list = [i.name for i in proto_graph.initializer]
     input_list = [i.name for i in proto_graph.input]
-    if len(input_list) - len(init_list) > 1:
-        logger.error("!!! can not parse multi input.")
-        sys.exit(-1)
+
     for i in proto_graph.input:
         if i.name not in init_list:
-            ir_graph.input = protoValueInfo_to_irValue(i)    
-    logger.info("input: %s %s", ir_graph.input.name , str(ir_graph.input.dims))
-
-    for dim in ir_graph.input.dims:
-        if dim == 0:
-            logger.error("!!! can not parse dynamic input.")
-            sys.exit(-1)
+            temp = protoValueInfo_to_irValue(i) 
+            ir_graph.input.append(temp)    
+            logger.info("input: %s %s", temp.name, temp.dims)
+            for dim in temp.dims:
+                if dim == 0:
+                    logger.error("!!! can not parse dynamic input.")
+                    sys.exit(-1)
 
     for i in proto_graph.output:
         temp = protoValueInfo_to_irValue(i)
         ir_graph.output.append(temp)
         logger.info("output: %s %s", temp.name,  temp.dims)
+
 
     # ----- 添加 init_list -----
     logger.debug("----------------------")
@@ -172,8 +171,10 @@ def convert(onnx_model_file):
                 ir_node.weight.append(init_dict[i])
             elif i in mid_feature_dict:
                 ir_node.input.append(mid_feature_dict[i])
-            elif i == ir_graph.input.name:
-                ir_node.input.append(ir_graph.input)
+            elif i in [i.name for i in ir_graph.input]:
+                for t in ir_graph.input:
+                    if i == t.name:
+                        ir_node.input.append(t)
             else:
                 logger.warn("input %s not find", i)
             

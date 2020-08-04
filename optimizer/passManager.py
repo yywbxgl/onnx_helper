@@ -42,6 +42,9 @@ class passManager():
         from optimizer.passes.transpose_to_init  import transpose_to_init
         from optimizer.passes.unsqueeze_to_reshape  import unsqueeze_to_reshape
         from optimizer.passes.matmul_to_gemm  import matmul_to_gemm
+        from optimizer.passes.convert_constantOfShape_to_init  import convert_constantOfShape_to_init
+
+        
 
         self.passes_manager= {}
         
@@ -78,6 +81,7 @@ class passManager():
         self.passes_manager["transpose_to_init"] = transpose_to_init()
         self.passes_manager["unsqueeze_to_reshape"] = unsqueeze_to_reshape()
         self.passes_manager["matmul_to_gemm"] = matmul_to_gemm()
+        self.passes_manager["convert_constantOfShape_to_init"] = convert_constantOfShape_to_init()
 
         
 

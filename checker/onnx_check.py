@@ -18,8 +18,10 @@ def ir_op_check(ir_graph):
     logger.info("check graph operator...")
     for node in ir_graph.node_list:
         for i in node.input:
-            if i.name == ir_graph.input.name:
-                g.edge(i.name, node.name, label=str(ir_graph.input.dims))
+            if i.name in [t.name for t in ir_graph.input] :
+                for t in ir_graph.input:
+                    if t.name == i.name:
+                        g.edge(node.name, t.name, label=str(t.dims))
         for i in node.output:
             if i.name in [t.name for t in ir_graph.output] :
                 for t in ir_graph.output:
