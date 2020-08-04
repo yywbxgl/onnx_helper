@@ -87,7 +87,10 @@ def protoAttribute_to_irValue(proto_attribute):
 def convert(onnx_model_file):
 
     logger.info("load model ...")
-    ModelProto = onnx.load(onnx_model_file)
+    if type(onnx_model_file) == str:
+        ModelProto = onnx.load(onnx_model_file)
+    else:
+        ModelProto = onnx_model_file
     logger.info("check onnx model ...")
     onnx.checker.check_model(ModelProto)
     logger.info("shape inference onnx model ...")

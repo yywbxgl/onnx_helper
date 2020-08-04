@@ -74,7 +74,7 @@ if __name__ == "__main__":
         "fuse_pad_into_conv",
 
         "reshape_consecutive_eliminate",
-        "reshape_nop_eliminate",
+
 
         # "transpose_input",            
         # "transpose_into_reshape",
@@ -91,6 +91,7 @@ if __name__ == "__main__":
         "matmul_to_gemm",
 
         "slice_nop_eliminate",
+        # "reshape_nop_eliminate",
     ]
 
     # pass_list = ["softmax_swap_down", "reshape_consecutive_eliminate"]
