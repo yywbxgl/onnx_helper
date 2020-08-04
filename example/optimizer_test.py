@@ -74,22 +74,23 @@ if __name__ == "__main__":
         "fuse_pad_into_conv",
 
         "reshape_consecutive_eliminate",
-        # "reshape_nop_eliminate",
+        "reshape_nop_eliminate",
 
-        # "transpose_input",
+        # "transpose_input",            
         # "transpose_into_reshape",
         # "transpose_into_reducemean",
         # "transpose_into_reshape_prenode",
+        # "transpose_eliminate",     # tranpose pass 慎用
+        # "softmax_swap_down",
+        # "transpose_swap_down",
 
         "squeeze_to_reshape",
         "unsqueeze_to_reshape",
 
-        # "transpose_eliminate",   # 这三个慎用
-        # "softmax_swap_down",
-        # "transpose_swap_down",
         "leakRelu_to_PRelu",
-
         "matmul_to_gemm",
+
+        "slice_nop_eliminate",
     ]
 
     # pass_list = ["softmax_swap_down", "reshape_consecutive_eliminate"]
