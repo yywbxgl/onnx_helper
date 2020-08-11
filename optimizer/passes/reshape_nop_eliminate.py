@@ -12,9 +12,9 @@ class reshape_nop_eliminate():
     # 判断是否满足条件
     def match_conditions(self, node):
         if node.op_type == "Reshape":
+                        
             if len(node.input[0].dims) != 0 and len(node.output[0].dims) != 0 :
                 if node.input[0].dims == node.output[0].dims:
-                    print("------", node.input[0].dims , node.output[0].dims)
                     return True
             else:
                 logger.warn("can not get reshape input shape and output shape.")
