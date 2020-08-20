@@ -19,7 +19,7 @@ print("-----inputs----------")
 inputs_dict = {}
 for i in inputs:
     print(i.name, i.shape, i.type)
-    x = np.random.sample(i.shape).astype(np.float32) * 255
+    x = np.random.sample(i.shape).astype(np.float32) 
     inputs_dict[i.name] = x
 
 
@@ -33,7 +33,10 @@ for i in outputs:
 print("-----inference----------")
 result = session.run(output_list, inputs_dict)
 print("test pass.")
-# print(result)
+for i in result:
+    out = np.array(i)
+    print("output:", out.shape)
+print(result)
 
 
 

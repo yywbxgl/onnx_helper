@@ -3,6 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import onnx
 from onnx import helper, shape_inference
+from onnx import version_converter
 import numpy as np
 import onnxruntime.backend as backend
 import logging
@@ -34,7 +35,6 @@ if __name__ == "__main__":
 
     # ---- step0. simplify onnx model
     # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,224,224,3])
-    # onnx_sim = onnx_simplifier.simplify(input_file, input_shape=[1,3,12,12])
     onnx_sim = onnx_simplifier.simplify(input_file)
     # onnx_sim = onnx_simplifier.change_version(onnx_sim)
     onnx.save(onnx_sim, output_file)
@@ -74,11 +74,13 @@ if __name__ == "__main__":
         "fuse_pad_into_conv",
 
         "reshape_consecutive_eliminate",
+        "slice_nop_eliminate",
+        "reshape_nop_eliminate",
 
 
-        # "transpose_input",            
+        "transpose_input",            
         # "transpose_into_reshape",
-        # "transpose_into_reducemean",
+        "transpose_into_reducemean",
         # "transpose_into_reshape_prenode",
         # "transpose_eliminate",     # tranpose pass 慎用
         # "softmax_swap_down",
@@ -89,9 +91,6 @@ if __name__ == "__main__":
 
         "leakRelu_to_PRelu",
         "matmul_to_gemm",
-
-        "slice_nop_eliminate",
-        # "reshape_nop_eliminate",
     ]
 
     # pass_list = ["softmax_swap_down", "reshape_consecutive_eliminate"]
@@ -119,16 +118,16 @@ if __name__ == "__main__":
 
     # -----setp 5 compile onnx_model, save loadable
     logger.info("change version to 3/8")
+    onnx_model = version_converter.convert_version(onnx_model, 8)  # 使用onnx的version_converter
     onnx_model.ir_version=3
-    onnx_model.opset_import[0].version = 8
-    onnx_model.producer_name =  "pytorch"
+    onnx_model.producer_name =  "ykx-nb"
     file_name = output_file + "_ir3.onnx"
     loadable_name = output_file + "_ir3.nbdla"
     logger.info('save onnx model %s ...', file_name)
     onnx.save(onnx_model, file_name)
     onnx_simplifier.test_conveted_model(onnx_ori, file_name)
 
-    complier = "../tools/ys13_bin_onnc.nv_large  "
+    complier = "~/onnx_test/onnx_helper/tools/ys13_bin_onnc.nv_large  "
     cmd = complier + file_name + "  -o " + loadable_name
     ret = os.system(cmd)
     if ret != 256:
